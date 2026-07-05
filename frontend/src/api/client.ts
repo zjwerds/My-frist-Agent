@@ -144,6 +144,7 @@ export function sendChatMessage(
   onUsage?: (usage: { prompt_tokens: number; completion_tokens: number; cache_hit_tokens: number }) => void,
   temperature?: number,
   edit_mode?: boolean,
+  fileContext?: string,
 ): AbortController {
   const controller = new AbortController()
   let isTimedOut = false
@@ -160,7 +161,8 @@ export function sendChatMessage(
     body: JSON.stringify({
       message,
       images: images.length > 0 ? images : undefined,
-      temperature: temperature !== undefined ? temperature : undefined,
+      file_context: fileContext || undefined,
+	      temperature: temperature !== undefined ? temperature : undefined,
       edit_mode: edit_mode || undefined,
     }),
     signal: controller.signal,

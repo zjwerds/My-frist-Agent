@@ -171,6 +171,10 @@ async def chat(
 
             messages.append(current_user_msg)
 
+            # ★ file_context: inject full parsed text as AI-only context (not saved to DB, not displayed)
+            if request.file_context:
+                messages.append({"role": "user", "content": f"[用户上传了文件，以下是文件解析内容，请据此回答用户的问题]\n{request.file_context}"})
+
             # Get conversation for project_path context
             conv = history_crud.get_conversation(db, conversation_id)
             project_path = conv.project_path if conv else None

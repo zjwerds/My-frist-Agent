@@ -11,7 +11,7 @@ interface FileAttachment {
 }
 
 interface ChatInputProps {
-  onSend: (text: string, images?: string[]) => void
+  onSend: (text: string, images?: string[], fileContext?: string) => void
   isLoading: boolean
   disabled?: boolean
   onCancel?: () => void
@@ -135,10 +135,12 @@ export function ChatInput({ onSend, isLoading, disabled, onCancel }: ChatInputPr
     if ((!text.trim() && images.length === 0 && attachments.length === 0) || isLoading || disabled) return
 
     let finalText = text.trim()
+    let fileContext = ''
 
     const pending = attachments.filter((a) => a.status === 'pending')
     if (pending.length > 0) {
-      const fileBlocks: string[] = []
+      const displayRefs: string[] = []
+      const contextParts: string[] = []
 
       setAttachments((prev) => prev.map((a) => (a.status === 'pending' ? { ...a, status: 'uploading' as const } : a)))
 
@@ -156,10 +158,13 @@ export function ChatInput({ onSend, isLoading, disabled, onCancel }: ChatInputPr
               : result.paragraphs
                 ? `（${result.paragraphs} 段，${result.size} 字）`
                 : `（${result.size} 字）`
-          const header = `[${getFileExt(att.name).toUpperCase()} ${att.name}] ${meta}`
-          fileBlocks.push(`${header}\n${'─'.repeat(32)}\n${result.text}`)
+          const ext = getFileExt(att.name).toUpperCase()
+          // Display: short reference only
+          displayRefs.push(`[${ext} ${att.name}] ${meta}`)
+          // AI context: full parsed text
+          contextParts.push(`[文件: ${att.name}]\n${result.text}`)
           if (result.warning) {
-            fileBlocks.push(`> ${result.warning}`)
+            displayRefs.push(`> ⚠️ ${result.warning}`)
           }
         } catch (err: any) {
           setAttachments((prev) =>
@@ -168,12 +173,15 @@ export function ChatInput({ onSend, isLoading, disabled, onCancel }: ChatInputPr
         }
       }
 
-      if (fileBlocks.length > 0) {
-        finalText = fileBlocks.join('\n\n') + (finalText ? '\n\n' + finalText : '')
+      if (displayRefs.length > 0) {
+        finalText = displayRefs.join('\n') + (finalText ? '\n\n' + finalText : '')
+      }
+      if (contextParts.length > 0) {
+        fileContext = contextParts.join('\n\n---\n\n')
       }
     }
 
-    onSend(finalText, images)
+    onSend(finalText, images, fileContext || undefined)
     setText('')
     setImages([])
     setAttachments([])

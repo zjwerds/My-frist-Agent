@@ -109,7 +109,7 @@ export function ChatView({ conversationId, onMessageComplete, onUsage, onNewConv
     }
   }, [])
 
-  const handleSend = useCallback(async (text: string, images?: string[]) => {
+  const handleSend = useCallback(async (text: string, images?: string[], fileContext?: string) => {
     if (!text.trim() && (!images || images.length === 0)) return
 
     // Auto-create conversation if none active
@@ -183,6 +183,8 @@ export function ChatView({ conversationId, onMessageComplete, onUsage, onNewConv
       // onUsage
       onUsage,
       temperature,
+      undefined, // edit_mode
+      fileContext,
     )
 
     abortRef.current = controller
