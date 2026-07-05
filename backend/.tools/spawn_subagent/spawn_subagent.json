@@ -1,0 +1,33 @@
+{
+  "id": "spawn_subagent",
+  "name": "启动子任务",
+  "description": "创建独立运行的子任务用于并行处理",
+  "category": "实用工具",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "spawn_subagent",
+      "description": "创建一个独立的子任务，用于并行处理或后台执行。适合将大型任务拆分为多个可独立执行的小任务。创建后可通过 subagent_id 查询状态和结果。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "task_description": {
+            "type": "string",
+            "description": "子任务的详细描述，说明要做什么"
+          },
+          "context": {
+            "type": "string",
+            "description": "子任务需要的附加上下文信息（可选）"
+          }
+        },
+        "required": [
+          "task_description"
+        ]
+      }
+    }
+  }
+}

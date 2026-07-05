@@ -1,0 +1,40 @@
+{
+  "id": "env_manage",
+  "name": "环境变量管理",
+  "description": "管理 .env 文件中的环境变量（读取/设置/删除/列出）",
+  "category": "实用工具",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "env_manage",
+      "description": "管理 .env 文件中的环境变量。支持 list（列出所有变量，敏感值自动脱敏）、get（查看单个变量）、set（设置/新增变量）、unset（删除变量）。自动在项目目录中查找 .env 文件。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "操作类型：list（列出所有）、get（获取单个）、set（设置）、unset（删除）",
+            "enum": ["list", "get", "set", "unset"]
+          },
+          "key": {
+            "type": "string",
+            "description": "环境变量名（get/set/unset 时必填）"
+          },
+          "value": {
+            "type": "string",
+            "description": "环境变量值（set 时必填）"
+          },
+          "filepath": {
+            "type": "string",
+            "description": ".env 文件路径，不传则自动在项目中查找"
+          }
+        },
+        "required": ["action"]
+      }
+    }
+  }
+}

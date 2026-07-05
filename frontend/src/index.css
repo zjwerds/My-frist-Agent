@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #fdf6ee;
+  --accent: #f59e6b;
+  --accent-hover: #e8884f;
+  --accent-dim: rgba(245, 158, 107, 0.15);
+  --bubble-user: #f59e6b;
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-border-hover: rgba(255, 255, 255, 0.2);
+  --text-primary: #1a1a2e;
+  --text-secondary: #6b5e55;
+  --sidebar-bg: rgba(22, 22, 42, 0.85);
+  --surface-dark: #1a1a30;
+  --surface-hover: #1e1e3a;
+  --border-dark: #2a2a4a;
+}
+
+[data-theme="mint"] {
+  --bg: #f5f0e8;
+  --accent: #8fb396;
+  --accent-hover: #7aa385;
+  --accent-dim: rgba(143, 179, 150, 0.15);
+  --bubble-user: #8fb396;
+  --text-primary: #1a1a2e;
+  --text-secondary: #5c6b5a;
+  --sidebar-bg: rgba(22, 22, 42, 0.85);
+}
+
+[data-theme="lavender"] {
+  --bg: #faf0f5;
+  --accent: #c9a0d4;
+  --accent-hover: #b98cc6;
+  --accent-dim: rgba(201, 160, 212, 0.15);
+  --bubble-user: #c9a0d4;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6b5a6b;
+  --sidebar-bg: rgba(22, 22, 42, 0.85);
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: #e0e0e0;
+  transition: background-color 0.3s ease;
+}
+
+/* ── Glassmorphism utilities ── */
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.glass-sm {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--glass-border);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+}
+
+.glass-card:hover {
+  border-color: var(--glass-border-hover);
+}
+
+/* ── Accent color utilities ── */
+
+.bg-accent { background-color: var(--accent); }
+.bg-accent:hover { background-color: var(--accent-hover); }
+.bg-accent-dim { background-color: var(--accent-dim); }
+.text-accent { color: var(--accent); }
+.text-secondary { color: var(--text-secondary); }
+.border-accent { border-color: var(--accent); }
+
+/* ── Focus ring ── */
+
+.focus-ring-accent:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+/* ── Scrollbar styling ── */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #3a3a5a;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #5a5a7a;
+}
+
+/* Hide scrollbar in popover/dialog panels while keeping scroll functionality */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ── View transitions ── */
+
+.view-enter {
+  opacity: 0;
+  transform: translateY(4px);
+}
+.view-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* ── Temperature slider ── */
+
+.temp-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  border: 1px solid #666;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+
+.temp-slider::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  border: 1px solid #666;
+  cursor: pointer;
+}
+
+/* ── Skeleton shimmer ── */
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}

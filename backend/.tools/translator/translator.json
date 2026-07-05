@@ -1,0 +1,37 @@
+{
+  "id": "translator",
+  "name": "翻译",
+  "description": "在多种语言之间翻译文本",
+  "category": "写作内容",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "translator",
+      "description": "翻译文本到目标语言。支持100+种语言，自动检测源语言。当用户要求翻译文字或需要将内容转为另一种语言时调用此工具。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "待翻译的文本"
+          },
+          "source": {
+            "type": "string",
+            "description": "源语言代码（默认 auto 自动检测），如 en/zh-CN/ja/fr/de/es"
+          },
+          "target": {
+            "type": "string",
+            "description": "目标语言代码（默认 zh-CN），如 en/zh-CN/ja/fr/de/es"
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "id": "json_formatter",
+  "name": "JSON 格式化",
+  "description": "格式化、压缩或验证 JSON 字符串",
+  "category": "实用工具",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "json_formatter",
+      "description": "对 JSON 字符串进行格式化（美化）、压缩（minify）或验证。当用户需要整理乱序的 JSON 或检查 JSON 格式时调用。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "json_string": {
+            "type": "string",
+            "description": "待处理的 JSON 字符串"
+          },
+          "action": {
+            "type": "string",
+            "description": "操作类型：format（格式化）、minify（压缩）、validate（验证），默认 format"
+          }
+        },
+        "required": [
+          "json_string"
+        ]
+      }
+    }
+  }
+}

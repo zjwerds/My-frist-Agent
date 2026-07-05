@@ -1,0 +1,30 @@
+{
+  "id": "code_review",
+  "name": "代码审查",
+  "description": "使用 flake8 对 Python 代码进行静态检查",
+  "category": "代码开发",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "code_review",
+      "description": "对 Python 代码进行静态审查，检查代码风格、潜在错误和不良实践。可以审查已有文件（提供 path）或直接审查代码片段（提供 code）。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "要审查的 Python 文件路径"
+          },
+          "code": {
+            "type": "string",
+            "description": "要审查的 Python 代码字符串（与 path 二选一）"
+          }
+        }
+      }
+    }
+  }
+}

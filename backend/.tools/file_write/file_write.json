@@ -1,0 +1,34 @@
+{
+  "id": "file_write",
+  "name": "写文件",
+  "description": "创建或覆写本地文件",
+  "category": "代码开发",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "file_write",
+      "description": "创建新文件或覆写已有文件的内容。当用户要求生成代码、修改文件或创建新文件时调用此工具。注意：此工具会覆盖目标文件的现有内容。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "文件路径，可以是绝对路径或相对于工作目录的路径"
+          },
+          "content": {
+            "type": "string",
+            "description": "要写入的文件内容"
+          }
+        },
+        "required": [
+          "path",
+          "content"
+        ]
+      }
+    }
+  }
+}

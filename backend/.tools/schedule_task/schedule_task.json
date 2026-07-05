@@ -1,0 +1,38 @@
+{
+  "id": "schedule_task",
+  "name": "定时任务",
+  "description": "安排一个在未来特定时间执行的任务",
+  "category": "实用工具",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "schedule_task",
+      "description": "安排一个在未来特定时间执行的任务。使用 cron 表达式指定执行时间。当用户说「提醒我」「定时」「每天/每周做某事」时使用此工具。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "定时执行的任务描述"
+          },
+          "cron": {
+            "type": "string",
+            "description": "cron 表达式（5位：分 时 日 月 周），如 '0 9 * * *' 表示每天早上9点"
+          },
+          "recurring": {
+            "type": "boolean",
+            "description": "是否重复执行（默认 true），false 表示一次性任务"
+          }
+        },
+        "required": [
+          "prompt",
+          "cron"
+        ]
+      }
+    }
+  }
+}

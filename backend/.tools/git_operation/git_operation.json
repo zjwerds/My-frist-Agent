@@ -1,0 +1,72 @@
+{
+  "id": "git_operation",
+  "name": "Git操作",
+  "description": "在项目仓库中执行 Git 操作（status/diff/log/add/commit/push/pull/branch/checkout/merge）",
+  "category": "代码开发",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "git_operation",
+      "description": "在项目 Git 仓库中执行各种版本控制操作。支持 status（查看状态）、diff（查看差异）、log（查看提交历史）、add（暂存文件）、commit（提交）、push（推送）、pull（拉取）、branch（分支管理）、checkout（切换分支）、merge（合并分支）。自动在工作区范围内运行，默认使用项目根目录的仓库。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "要执行的 Git 操作：status（简短状态）、diff（差异）、log（提交历史）、add（暂存）、commit（提交）、push（推送）、pull（拉取）、branch（分支）、checkout（切换）、merge（合并）",
+            "enum": ["status", "diff", "log", "add", "commit", "push", "pull", "branch", "checkout", "merge"]
+          },
+          "repo_path": {
+            "type": "string",
+            "description": "Git 仓库路径，默认为项目根目录"
+          },
+          "message": {
+            "type": "string",
+            "description": "commit 时的提交信息（action=commit 时必填）"
+          },
+          "files": {
+            "type": "string",
+            "description": "要暂存的文件路径，默认 '.' 表示所有（action=add 时使用）"
+          },
+          "branch": {
+            "type": "string",
+            "description": "推送/拉取的目标分支名（action=push/pull 时使用）"
+          },
+          "remote": {
+            "type": "string",
+            "description": "远程仓库名，默认 origin（action=push/pull 时使用）"
+          },
+          "target": {
+            "type": "string",
+            "description": "checkout 的目标分支名或提交 hash（action=checkout 时必填）"
+          },
+          "new_branch": {
+            "type": "string",
+            "description": "checkout 时创建新分支的名称（action=checkout 时可选）"
+          },
+          "source": {
+            "type": "string",
+            "description": "要合并的源分支名（action=merge 时必填）"
+          },
+          "count": {
+            "type": "integer",
+            "description": "log 显示的提交数量，默认 10，最多 50（action=log 时使用）"
+          },
+          "staged": {
+            "type": "boolean",
+            "description": "是否只显示已暂存的差异，默认 false（action=diff 时使用）"
+          },
+          "list": {
+            "type": "boolean",
+            "description": "是否显示所有分支（含远程），默认 false（action=branch 时使用）"
+          }
+        },
+        "required": ["action"]
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "id": "pip_install",
+  "name": "安装 pip 包",
+  "description": "安装 Python 依赖包",
+  "category": "代码开发",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "pip_install",
+      "description": "运行 pip install 安装 Python 包。支持传入具体包名或 requirements.txt 文件路径。自动使用当前 Python 解释器的 pip。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "packages": {
+            "type": "string",
+            "description": "要安装的包名，多个包用空格分隔（与 requirements 二选一）"
+          },
+          "requirements": {
+            "type": "string",
+            "description": "requirements.txt 文件路径（与 packages 二选一）"
+          }
+        }
+      }
+    }
+  }
+}

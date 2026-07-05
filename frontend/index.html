@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>煎蛋Agent</title>
+  </head>
+  <body>
+    <div id="root">
+      <div id="loading" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#fdf6ee;color:#999;font-family:system-ui,sans-serif;gap:12px;">
+        <svg width="40" height="40" viewBox="0 0 80 80" fill="none" style="opacity:0.4">
+          <ellipse cx="40" cy="43" rx="22" ry="28" stroke="currentColor" stroke-width="1.5" />
+          <circle cx="31" cy="36" r="3" fill="currentColor" />
+          <circle cx="49" cy="36" r="3" fill="currentColor" />
+          <path d="M34 47 Q40 53 46 47" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+        <span style="font-size:14px;">加载中...</span>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

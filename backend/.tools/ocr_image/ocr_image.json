@@ -1,0 +1,29 @@
+{
+  "id": "ocr_image",
+  "name": "图片文字识别",
+  "description": "从图片中提取文字（OCR）",
+  "category": "实用工具",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "ocr_image",
+      "description": "从一张或多张图片中提取文字，返回识别结果。当用户上传了图片且你需要理解图片中的文字时（如截图、扫描件、拍照的文字），调用此工具。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "image_index": {
+            "type": "integer",
+            "description": "要识别的图片索引（从0开始），当前对话中所有图片按发送顺序排列"
+          }
+        },
+        "required": [
+          "image_index"
+        ]
+      }
+    }
+  }
+}

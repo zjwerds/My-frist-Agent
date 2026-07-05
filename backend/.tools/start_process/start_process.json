@@ -1,0 +1,35 @@
+{
+  "id": "start_process",
+  "name": "启动后台进程",
+  "description": "在后台启动一个长时间运行的进程（如 dev server），返回 process_id 供后续管理",
+  "category": "实用工具",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "start_process",
+      "description": "在后台启动一个长时间运行的进程（如 dev server、watch 模式等），返回 process_id。之后可用 stop_process 停止或用 read_process_log 查看输出。进程在工作区范围内运行。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "要执行的命令（如 npm run dev、python server.py）"
+          },
+          "work_dir": {
+            "type": "string",
+            "description": "工作目录，默认项目根目录"
+          },
+          "process_id": {
+            "type": "string",
+            "description": "自定义进程 ID，不传则自动生成"
+          }
+        },
+        "required": ["command"]
+      }
+    }
+  }
+}

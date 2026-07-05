@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+*.egg
+.venv/
+venv/
+
+# PyInstaller build artifacts
+backend/build/
+backend/dist/
+!backend/dist/.gitkeep
+
+# Node
+node_modules/
+
+# Frontend build
+frontend/dist/
+frontend/dist-electron/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime data
+backend/agent.db
+backend/stats.json
+backend/*.db
+backend/tasks.json
+
+# Env
+.env
+.env.local

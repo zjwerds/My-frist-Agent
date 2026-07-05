@@ -1,0 +1,39 @@
+{
+  "id": "edit_file",
+  "name": "编辑文件",
+  "description": "精确搜索替换文件内容，无需覆盖整个文件",
+  "category": "代码开发",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "edit_file",
+      "description": "在文件中执行精确搜索替换。比整文件写入更高效、更安全——只需提供要替换的文本片段，工具会在文件中定位并替换。支持单次替换（默认）和全局替换（replace_all=true）。如果找不到匹配文本将返回错误。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "要编辑的文件路径"
+          },
+          "old_string": {
+            "type": "string",
+            "description": "文件中要替换的原始文本（必须精确匹配，包括空白和缩进）"
+          },
+          "new_string": {
+            "type": "string",
+            "description": "替换后的新文本"
+          },
+          "replace_all": {
+            "type": "boolean",
+            "description": "是否替换所有匹配项，默认 false（仅替换第一个匹配）"
+          }
+        },
+        "required": ["path", "old_string"]
+      }
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "id": "enter_plan",
+  "name": "制定计划",
+  "description": "为复杂任务创建结构化实施计划，包含步骤分解和上下文",
+  "category": "实用工具",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "enter_plan",
+      "description": "在实施复杂任务前创建结构化计划。将任务分解为清晰的步骤，记录上下文和注意事项。生成计划文档供后续实施参考。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "计划的标题，概括任务名称"
+          },
+          "steps": {
+            "type": "array",
+            "description": "实施步骤列表，每一步是一个字符串描述（必填，至少1步）",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          },
+          "context": {
+            "type": "string",
+            "description": "背景信息、约束条件、注意事项等补充上下文（可选）"
+          }
+        },
+        "required": [
+          "title",
+          "steps"
+        ]
+      }
+    }
+  }
+}

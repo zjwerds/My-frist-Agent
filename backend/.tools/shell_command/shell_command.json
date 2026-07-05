@@ -1,0 +1,37 @@
+{
+  "id": "shell_command",
+  "name": "执行命令",
+  "description": "在终端中执行 shell 命令",
+  "category": "代码开发",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "shell_command",
+      "description": "执行终端命令（git、npm、python、pip、ls 等）。当用户要求运行测试、安装依赖、查看 git 状态、构建项目或执行任何 shell 操作时调用此工具。注意：命令会在本地计算机上实际执行。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "要执行的 shell 命令"
+          },
+          "work_dir": {
+            "type": "string",
+            "description": "工作目录（可选，默认为当前目录）"
+          },
+          "timeout": {
+            "type": "integer",
+            "description": "超时秒数（默认30，最大120）"
+          }
+        },
+        "required": [
+          "command"
+        ]
+      }
+    }
+  }
+}

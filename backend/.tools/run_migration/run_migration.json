@@ -1,0 +1,40 @@
+{
+  "id": "run_migration",
+  "name": "数据库迁移",
+  "description": "执行 Alembic 数据库迁移（upgrade/downgrade/autogenerate）",
+  "category": "代码开发",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "run_migration",
+      "description": "执行 Alembic 数据库迁移操作。支持 upgrade（升级）、downgrade（回滚）、autogenerate（自动生成迁移脚本）、history（历史）、current（当前版本）、check（检查）、branches（分支）。autogenerate 需要提供 message 描述。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string",
+            "description": "迁移命令：upgrade（升级）、downgrade（回滚）、autogenerate（自动生成）、history（历史）、current（当前）、check（检查）、branches（分支）",
+            "enum": ["upgrade", "downgrade", "autogenerate", "history", "current", "check", "branches"]
+          },
+          "revision": {
+            "type": "string",
+            "description": "目标版本标识，默认 head（upgrade/downgrade 时使用）"
+          },
+          "message": {
+            "type": "string",
+            "description": "迁移描述信息（autogenerate 时必填）"
+          },
+          "work_dir": {
+            "type": "string",
+            "description": "项目目录（必须包含 alembic 配置），默认项目根目录"
+          }
+        },
+        "required": ["command"]
+      }
+    }
+  }
+}

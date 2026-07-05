@@ -1,0 +1,17 @@
+{
+  "meta": {
+    "version": "2.0.0",
+    "description": "煎蛋Agent 配置",
+    "last_updated": "2026-07-05"
+  },
+  "auth": {
+    "api_key": "",
+    "key_source": "file"
+  },
+  "api": {
+    "base_url": "https://api.deepseek.com",
+    "model": "deepseek-v4-flash",
+    "timeout_ms": 30000,
+    "max_retries": 3
+  }
+}

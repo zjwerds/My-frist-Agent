@@ -1,0 +1,36 @@
+{
+  "id": "ask_user",
+  "name": "询问用户",
+  "description": "在需要时向用户提问以澄清需求、获取决策或确认操作",
+  "category": "实用工具",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "ask_user",
+      "description": "向用户提出一个问题并等待回答。当需求不明确、需要用户做选择、或需要确认后才能继续操作时调用此工具。支持提供选项供用户选择。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string",
+            "description": "要向用户提出的问题，清晰描述需要确认的事项"
+          },
+          "options": {
+            "type": "array",
+            "description": "可选的选项列表（非必填），让用户从中选择",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "question"
+        ]
+      }
+    }
+  }
+}

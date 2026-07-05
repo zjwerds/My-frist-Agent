@@ -1,0 +1,38 @@
+{
+  "id": "file_search",
+  "name": "搜索文件",
+  "description": "按文件名模式或文件内容搜索项目文件",
+  "category": "代码开发",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "file_search",
+      "description": "在项目文件中搜索。支持两种模式：1) pattern 参数按 glob 文件名匹配 2) search_text 参数在文件内容中搜索指定文本。自动排除 node_modules/.git/__pycache__/dist/build 目录。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "pattern": {
+            "type": "string",
+            "description": "文件名 glob 模式，如 \"**/*.py\" 或 \"src/**/*.tsx\""
+          },
+          "search_text": {
+            "type": "string",
+            "description": "要搜索的文件内容文本"
+          },
+          "root_dir": {
+            "type": "string",
+            "description": "搜索根目录（默认为当前目录）"
+          },
+          "max_results": {
+            "type": "integer",
+            "description": "最大返回结果数（最多100，默认20）"
+          }
+        }
+      }
+    }
+  }
+}

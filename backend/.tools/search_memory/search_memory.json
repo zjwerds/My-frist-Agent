@@ -1,0 +1,27 @@
+{
+  "id": "search_memory",
+  "name": "搜索记忆",
+  "description": "在当前对话的历史记忆中搜索关键词，找到相关历史记录",
+  "category": "实用工具",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "search_memory",
+      "description": "在当前对话中搜索历史记忆，按关键词匹配。当用户提到「之前说的」「刚才的」「上一步」或者你需要回顾早前的对话内容时，调用此工具。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "搜索关键词，尽量精确"
+          }
+        },
+        "required": ["query"]
+      }
+    }
+  }
+}

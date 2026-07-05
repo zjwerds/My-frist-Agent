@@ -1,0 +1,34 @@
+{
+  "id": "npm_install",
+  "name": "安装 npm 包",
+  "description": "在项目中安装 npm 依赖包",
+  "category": "代码开发",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "npm_install",
+      "description": "在指定目录下运行 npm install 安装依赖包。可传入具体包名安装指定包，也可不传包名直接安装 package.json 中所有依赖。支持 --save-dev。工作目录必须有 package.json。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "packages": {
+            "type": "string",
+            "description": "要安装的包名，多个包用空格分隔。不传则安装 package.json 中的所有依赖"
+          },
+          "work_dir": {
+            "type": "string",
+            "description": "项目目录（必须包含 package.json），默认项目根目录"
+          },
+          "save_dev": {
+            "type": "boolean",
+            "description": "是否安装为 devDependencies（--save-dev），默认 false"
+          }
+        }
+      }
+    }
+  }
+}

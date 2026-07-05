@@ -1,0 +1,46 @@
+{
+  "id": "regex_tester",
+  "name": "正则测试",
+  "description": "测试正则表达式匹配结果",
+  "category": "实用工具",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "regex_tester",
+      "description": "测试正则表达式在文本上的匹配效果，返回匹配位置、内容和分组信息。支持忽略大小写、多行模式和 dotall 模式。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "pattern": {
+            "type": "string",
+            "description": "正则表达式模式"
+          },
+          "text": {
+            "type": "string",
+            "description": "要匹配的文本"
+          },
+          "ignore_case": {
+            "type": "boolean",
+            "description": "是否忽略大小写"
+          },
+          "multiline": {
+            "type": "boolean",
+            "description": "是否启用多行模式（^/$ 匹配每行）"
+          },
+          "dotall": {
+            "type": "boolean",
+            "description": "是否让 . 匹配换行符"
+          }
+        },
+        "required": [
+          "pattern",
+          "text"
+        ]
+      }
+    }
+  }
+}

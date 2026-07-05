@@ -1,0 +1,36 @@
+{
+  "id": "read_process_log",
+  "name": "读取进程日志",
+  "description": "读取后台进程的标准输出或错误输出",
+  "category": "实用工具",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "read_process_log",
+      "description": "读取后台进程的 stdout 或 stderr 日志。用于检查长时间运行进程（如 dev server）的输出状态。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "process_id": {
+            "type": "string",
+            "description": "进程 ID（由 start_process 返回）"
+          },
+          "stream": {
+            "type": "string",
+            "description": "要读取的流：stdout（标准输出）或 stderr（错误输出），默认 stdout",
+            "enum": ["stdout", "stderr"]
+          },
+          "lines": {
+            "type": "integer",
+            "description": "读取最近多少行，默认 50"
+          }
+        },
+        "required": ["process_id"]
+      }
+    }
+  }
+}

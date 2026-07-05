@@ -1,0 +1,34 @@
+{
+  "id": "watch_files",
+  "name": "文件变更监视",
+  "description": "监视目录中文件的增删改变化（基于轮询快照对比）",
+  "category": "实用工具",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "watch_files",
+      "description": "监视指定目录中文件的新增、修改和删除变化。通过快照对比文件修改时间实现，不依赖操作系统事件。首次调用建立快照（返回 first_snapshot_taken），后续调用对比变化并更新快照。设置 reset=true 可重新建立快照。自动排除 node_modules/.git/__pycache__ 等目录。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "directory": {
+            "type": "string",
+            "description": "要监视的目录路径，默认项目根目录"
+          },
+          "reset": {
+            "type": "boolean",
+            "description": "是否重置快照（重新建立基线），默认 false"
+          },
+          "max_results": {
+            "type": "integer",
+            "description": "最多返回的变更数量，默认 50"
+          }
+        }
+      }
+    }
+  }
+}

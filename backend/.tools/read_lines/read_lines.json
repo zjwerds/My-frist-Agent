@@ -1,0 +1,35 @@
+{
+  "id": "read_lines",
+  "name": "读取文件行范围",
+  "description": "读取文件的指定行范围，适合大文件的部分读取",
+  "category": "代码开发",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "read_lines",
+      "description": "读取文件中指定行范围的内容。当需要查看大文件的特定部分（如函数定义、错误行附近）时使用，比 file_read 更节省 token。行号从 1 开始计数。不传 end 则读取到文件末尾。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "要读取的文件路径"
+          },
+          "start": {
+            "type": "integer",
+            "description": "起始行号（从 1 开始），默认 1"
+          },
+          "end": {
+            "type": "integer",
+            "description": "结束行号，默认读取到文件末尾"
+          }
+        },
+        "required": ["path"]
+      }
+    }
+  }
+}

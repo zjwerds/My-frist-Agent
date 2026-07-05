@@ -1,0 +1,69 @@
+{
+  "name": "deepseek-agent",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "dev:electron": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "dev:server": "concurrently \"python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload --app-dir ../backend\" \"vite\"",
+    "build": "tsc -b && vite build",
+    "electron:dev": "NODE_ENV=development electron .",
+    "dist": "npm run build && cd ../backend && python -m PyInstaller build.spec --clean --noconfirm && cd ../frontend && electron-builder --win --config",
+    "pack": "electron-builder --win --dir --config"
+  },
+  "build": {
+    "appId": "com.deepseek.agent",
+    "productName": "煎蛋Agent",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../backend/dist/deepseek-agent-backend.exe",
+        "to": "backend/deepseek-agent-backend.exe"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "public/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "煎蛋Agent"
+    }
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.2",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "tailwindcss": "^4.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "concurrently": "^9.2.3",
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8",
+    "typescript": "~6.0.2",
+    "vite": "^8.1.0",
+    "wait-on": "^8.0.5"
+  }
+}

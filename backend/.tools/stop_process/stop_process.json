@@ -1,0 +1,31 @@
+{
+  "id": "stop_process",
+  "name": "停止后台进程",
+  "description": "停止一个正在运行的后台进程",
+  "category": "实用工具",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "stop_process",
+      "description": "停止由 start_process 启动的后台进程。默认先发送 SIGTERM，等 5 秒超时后强制 SIGKILL。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "process_id": {
+            "type": "string",
+            "description": "要停止的进程 ID（由 start_process 返回）"
+          },
+          "force": {
+            "type": "boolean",
+            "description": "是否立即强制杀死进程，默认 false"
+          }
+        },
+        "required": ["process_id"]
+      }
+    }
+  }
+}

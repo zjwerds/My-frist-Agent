@@ -1,0 +1,64 @@
+{
+  "id": "task_track",
+  "name": "任务管理",
+  "description": "创建、更新、列出、删除或重置任务列表，用于追踪多步复杂任务的进度",
+  "category": "实用工具",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "task_track",
+      "description": "管理任务列表以追踪多步骤任务的进度。支持 create（创建）、update（更新状态/内容）、list（列出所有）、delete（删除）、reset（重置全部）。开始复杂任务时先创建任务列表，每完成一步更新其状态为 completed。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "操作类型：create（创建）、update（更新）、list（列出）、delete（删除）、reset（重置全部）",
+            "enum": [
+              "create",
+              "update",
+              "list",
+              "delete",
+              "reset"
+            ]
+          },
+          "task_id": {
+            "type": "string",
+            "description": "任务 ID（update/delete 时需要）"
+          },
+          "content": {
+            "type": "string",
+            "description": "任务描述（create 时必须，update 时可选的）"
+          },
+          "active_form": {
+            "type": "string",
+            "description": "任务进行中的描述，如'正在修改配置文件'（可选）"
+          },
+          "status": {
+            "type": "string",
+            "description": "任务状态：pending（待处理）、in_progress（进行中）、completed（已完成）",
+            "enum": [
+              "pending",
+              "in_progress",
+              "completed"
+            ]
+          },
+          "tasks": {
+            "type": "array",
+            "description": "任务列表（reset 时需要），每项包含 content/active_form/status",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "action"
+        ]
+      }
+    }
+  }
+}

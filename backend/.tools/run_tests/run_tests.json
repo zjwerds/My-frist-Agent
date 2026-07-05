@@ -1,0 +1,44 @@
+{
+  "id": "run_tests",
+  "name": "运行测试",
+  "description": "运行项目测试（pytest / npm test / 自定义命令）并解析结果",
+  "category": "代码开发",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "run_tests",
+      "description": "运行项目测试并返回结果摘要。支持 pytest、npm test 或自定义命令。auto 模式会自动检测项目中的测试框架（检查 pytest.ini/pyproject.toml/package.json）。返回测试通过/失败/跳过统计和失败用例列表。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "runner": {
+            "type": "string",
+            "description": "测试框架：pytest（Python）、npm（Node.js）、auto（自动检测）、或传入自定义 command",
+            "enum": ["pytest", "npm", "auto"]
+          },
+          "work_dir": {
+            "type": "string",
+            "description": "项目目录，默认项目根目录"
+          },
+          "path": {
+            "type": "string",
+            "description": "测试文件或目录路径（pytest 时使用）"
+          },
+          "command": {
+            "type": "string",
+            "description": "自定义测试命令（覆盖 runner 设置）"
+          },
+          "timeout": {
+            "type": "integer",
+            "description": "超时秒数，默认 120"
+          }
+        },
+        "required": ["runner"]
+      }
+    }
+  }
+}

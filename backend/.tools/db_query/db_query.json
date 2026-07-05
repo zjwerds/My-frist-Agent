@@ -1,0 +1,27 @@
+{
+  "id": "db_query",
+  "name": "数据库查询",
+  "description": "在 agent 的 SQLite 数据库中执行只读 SELECT 查询",
+  "category": "实用工具",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "db_query",
+      "description": "在应用的 SQLite 数据库中执行只读 SQL 查询。仅支持 SELECT 语句，不支持 INSERT/UPDATE/DELETE。可用于查看对话记录、消息内容、API 配置等。每次查询最多返回 100 行。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "sql": {
+            "type": "string",
+            "description": "要执行的 SQL SELECT 查询语句（只读，必须以 SELECT 开头）"
+          }
+        },
+        "required": ["sql"]
+      }
+    }
+  }
+}
