@@ -332,9 +332,18 @@ function runElectron(electron) {
       await waitForBackend()
       createWindow()
     } catch (err) {
-      console.error('[main] Failed to start:', err)
-      dialog.showErrorBox('启动失败', `无法启动后端服务:\n${err.message}`)
-      app.quit()
+      console.error('[main] Backend startup failed:', err)
+      // Retry once
+      console.log('[main] Retrying backend startup...')
+      try {
+        await startPython()
+        await waitForBackend()
+        createWindow()
+      } catch (err2) {
+        console.error('[main] Backend retry also failed:', err2)
+        dialog.showErrorBox('启动失败', `无法启动后端服务:\n${err2.message}\n\n请尝试重新安装程序。`)
+        app.quit()
+      }
     }
 
     app.on('activate', () => {

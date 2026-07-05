@@ -160,10 +160,11 @@ export function ChatView({ conversationId, onMessageComplete, onUsage, onNewConv
       (error) => {
         streamingConvRef.current = null
         commitStreamingMessage()
+        const [firstLine] = (error instanceof Error ? error.message : String(error)).split('\n')
         const errorMsg: Message = {
           id: `error-${Date.now()}`,
           role: 'assistant',
-          content: `❌ ${error}`,
+          content: `⚠️ ${firstLine}`,
           created_at: new Date().toISOString(),
         }
         setMessages((prev) => [...prev, errorMsg])
@@ -234,10 +235,11 @@ export function ChatView({ conversationId, onMessageComplete, onUsage, onNewConv
         // onError
         (error) => {
           streamingConvRef.current = null
+          const [firstLine] = (error instanceof Error ? error.message : String(error)).split('\n')
           const errorMsg: Message = {
             id: `error-${Date.now()}`,
             role: 'assistant',
-            content: `❌ ${error}`,
+            content: `⚠️ ${firstLine}`,
             created_at: new Date().toISOString(),
           }
           setMessages((prev) => [...prev, errorMsg])

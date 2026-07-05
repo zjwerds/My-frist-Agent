@@ -2,16 +2,40 @@ import type { Conversation, Skill, ApiConfig } from '../types'
 
 const BASE_URL = 'http://127.0.0.1:8000/api'
 
+function normalizeFetchError(err: unknown): Error {
+  const msg = err instanceof Error ? err.message : String(err)
+  // Native fetch failure — backend unreachable
+  if (msg === 'Failed to fetch' || msg.includes('NetworkError') || msg.includes('Network request failed')) {
+    return new Error('无法连接到后端服务，请确认 "deepseek-agent-backend.exe" 正在运行')
+  }
+  return err instanceof Error ? err : new Error(msg)
+}
+
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE_URL}${url}`, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  })
+  let res: Response
+  try {
+    res = await fetch(`${BASE_URL}${url}`, {
+      headers: { 'Content-Type': 'application/json' },
+      ...options,
+    })
+  } catch (err) {
+    throw normalizeFetchError(err)
+  }
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: res.statusText }))
     throw new Error(err.detail || 'Request failed')
   }
   return res.json()
+}
+
+/** Quick health check — resolves true if backend is reachable. */
+export async function checkBackendHealth(): Promise<boolean> {
+  try {
+    const res = await fetch(`${BASE_URL}/health`, { signal: AbortSignal.timeout(3000) })
+    return res.ok
+  } catch {
+    return false
+  }
 }
 
 // Skills
@@ -146,7 +170,7 @@ export function sendChatMessage(
       let completed = false
       try {
         if (!response.ok) {
-          onError(new Error(`HTTP ${response.status}`))
+          onError(normalizeFetchError(new Error(`HTTP ${response.status}`)))
           return
         }
         const reader = response.body?.getReader()
@@ -210,7 +234,7 @@ export function sendChatMessage(
     .catch((err) => {
     clearTimeout(timeoutId)
     if (err.name !== 'AbortError') {
-      onError(err)
+      onError(normalizeFetchError(err))
     } else if (isTimedOut) {
       onError(new Error('请求超时（120秒），请重试或简化任务'))
     }

@@ -4,7 +4,7 @@ import { Sidebar } from './components/Sidebar/Sidebar'
 import { RightPanel } from './components/RightPanel/RightPanel'
 import { FileViewer } from './components/RightPanel/FileViewer'
 import { MenuBar } from './components/MenuBar/MenuBar'
-import { apisApi, historyApi, filesApi } from './api/client'
+import { apisApi, historyApi, filesApi, checkBackendHealth } from './api/client'
 
 const STORAGE_THEME = 'color-theme'
 const STORAGE_BG = 'bg-image'
@@ -21,6 +21,7 @@ export default function App() {
   const [hasApiKey, setHasApiKey] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const [temperature, setTemperature] = useState(0.5)
+  const [backendOk, setBackendOk] = useState(true)
 
   useEffect(() => {
     const savedTheme = localStorage.getItem(STORAGE_THEME) || 'warm'
@@ -55,6 +56,14 @@ export default function App() {
       setHasApiKey(configs.length > 0 && configs[0].api_key.length > 0)
     }).catch(() => setHasApiKey(false))
   }, [refreshKey])
+
+  // Periodic backend health check
+  useEffect(() => {
+    const check = () => checkBackendHealth().then(setBackendOk)
+    check()
+    const id = setInterval(check, 15000)
+    return () => clearInterval(id)
+  }, [])
 
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme)
@@ -154,9 +163,10 @@ export default function App() {
         hasBg={!!bgImage}
         temperature={temperature}
         onTemperatureChange={handleTemperatureChange}
+        backendOk={backendOk}
       />
       <div
-        className="flex flex-1 overflow-hidden"
+        className="flex flex-1 overflow-hidden relative"
         style={{
           backgroundColor: bgImage ? undefined : 'var(--bg)',
           backgroundImage: bgImage ? `url(${bgImage})` : undefined,
@@ -170,6 +180,17 @@ export default function App() {
           onSelectProject={handleSelectProject}
           onCreateProject={handleCreateProject}
         />
+        {!backendOk && (
+          <div className="absolute top-0 left-0 right-0 z-40 flex items-center justify-center gap-2 py-2 bg-red-500/90 text-white text-xs">
+            <span>⚠️ 后端服务未连接，请检查 <code className="px-1 bg-black/20 rounded">deepseek-agent-backend.exe</code> 是否正在运行</span>
+            <button
+              onClick={() => checkBackendHealth().then(setBackendOk)}
+              className="px-2 py-0.5 bg-white/20 rounded hover:bg-white/30 transition-colors"
+            >
+              重试
+            </button>
+          </div>
+        )}
         <RightPanel
           view={rightView}
           conversationId={activeConversationId}
