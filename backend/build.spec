@@ -7,8 +7,16 @@ block_cipher = None
 # Collect all necessary data files
 frontend_dist = os.path.join(SPECPATH, '..', 'frontend', 'dist')
 
+# Bundle .skills/ (prompt skills) and .tools/ (function tools) so they ship with the exe
+skills_dir = os.path.join(SPECPATH, '.skills')
+tools_dir = os.path.join(SPECPATH, '.tools')
+
 # Optional: Tesseract OCR engine (skip if not installed)
 datas = [(frontend_dist, 'frontend/dist')]
+if os.path.isdir(skills_dir):
+    datas.append((skills_dir, '.skills'))
+if os.path.isdir(tools_dir):
+    datas.append((tools_dir, '.tools'))
 
 # Search for Tesseract in known locations
 tesseract_candidates = [

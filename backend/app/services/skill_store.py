@@ -2,6 +2,7 @@
 
 import json
 import os
+import sys
 import glob
 import logging
 import re
@@ -1281,8 +1282,32 @@ def _migrate_skills_to_subdirs() -> None:
             logger.info("Migrated skill: %s → %s", basename, dest)
 
 
+def _seed_bundled_skills() -> None:
+    """When frozen (PyInstaller), copy bundled .skills/ and .tools/ from
+    sys._MEIPASS to get_data_dir() so they persist across runs."""
+    if not getattr(sys, 'frozen', False):
+        return
+    meipass = sys._MEIPASS
+    data_dir = get_data_dir()
+
+    for subdir in ('.skills', '.tools'):
+        src = os.path.join(meipass, subdir)
+        dst = os.path.join(data_dir, subdir)
+        if not os.path.isdir(src):
+            continue
+        if os.path.isdir(dst) and os.listdir(dst):
+            continue  # already seeded
+        import shutil
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        if os.path.isdir(dst):
+            shutil.rmtree(dst)
+        shutil.copytree(src, dst)
+        logger.info("Seeded bundled %s → %s (%d files)", subdir, dst, len(os.listdir(dst)))
+
+
 def init_skills() -> None:
     """Ensure .skills/ exists and seed builtin skills if empty."""
+    _seed_bundled_skills()
     _migrate_skills_to_subdirs()
     _seed_if_empty()
     _seed_function_skills()

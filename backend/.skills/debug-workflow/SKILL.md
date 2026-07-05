@@ -1,3 +1,11 @@
+---
+name: 调试流程
+description: 系统性调试方法：复现→隔离→定位→修复→验证，减少猜测式调试
+category: 选蛋
+enabled: false
+builtin: true
+---
+
 # 调试流程 Skill
 
 当用户报告 Bug 或异常行为时，按照以下流程系统性排查。

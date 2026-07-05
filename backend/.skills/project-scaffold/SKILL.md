@@ -1,3 +1,11 @@
+---
+name: 项目脚手架
+description: 系统化项目搭建流程：需求分析 → 目录设计 → 逐文件创建 → 依赖安装 → Git初始化 → 启动验证
+category: 选蛋
+enabled: false
+builtin: true
+---
+
 # 项目脚手架 Skill
 
 当用户要求你「建一个新项目」或「搭一个脚手架」时，请按照以下流程操作。
