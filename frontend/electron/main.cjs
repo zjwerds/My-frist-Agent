@@ -327,10 +327,13 @@ function runElectron(electron) {
   // ── App lifecycle ──────────────────────────────────────────────────────────
 
   app.whenReady().then(async () => {
+    // Show loading window immediately — user sees a loading screen instead of black screen
+    createWindow()
+
     try {
       await startPython()
       await waitForBackend()
-      createWindow()
+      // Frontend detects backend ready via its own /api/health polling
     } catch (err) {
       console.error('[main] Backend startup failed:', err)
       // Retry once
@@ -338,7 +341,6 @@ function runElectron(electron) {
       try {
         await startPython()
         await waitForBackend()
-        createWindow()
       } catch (err2) {
         console.error('[main] Backend retry also failed:', err2)
         dialog.showErrorBox('启动失败', `无法启动后端服务:\n${err2.message}\n\n请尝试重新安装程序。`)

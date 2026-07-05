@@ -37,27 +37,21 @@ def _resolve_path(path: str, root: str | None = None) -> Path:
             root_path = Path(root).resolve()
             if not root_path.is_dir():
                 raise HTTPException(400, f"项目根路径不是有效目录: {root}")
-            # SECURITY: Reject filesystem roots (C:\, /) to prevent path traversal
-            workspace = WORKSPACE_ROOT.resolve()
-            allowed_parents = [workspace, workspace.parent]  # backend/ and agent-platform/
-            if not any(ap in root_path.parents or root_path == ap for ap in allowed_parents):
-                raise HTTPException(403, f"项目根路径超出允许范围: {root}")
+            # SECURITY: Reject filesystem roots (C:\, /) to prevent full-disk scanning
+            if root_path.parent == root_path:
+                raise HTTPException(403, f"不允许以文件系统根路径作为项目根: {root}")
             p = (root_path / path).resolve()
             # Must stay within the project root
             if root_path not in p.parents and p != root_path:
                 raise HTTPException(403, f"无权访问该路径: {path}")
             return p
         else:
-            # Fall back to default workspace check
+            # No root specified: allow any path except filesystem roots
             p = Path(path)
             resolved = p.resolve()
-            workspace = WORKSPACE_ROOT.resolve()
-            if workspace in resolved.parents or resolved == workspace:
-                return resolved
-            agent_root = workspace.parent
-            if agent_root in resolved.parents or resolved == agent_root:
-                return resolved
-            raise HTTPException(403, f"无权访问该路径: {path}")
+            if resolved.parent == resolved:
+                raise HTTPException(403, f"不允许访问文件系统根路径: {path}")
+            return resolved
     except HTTPException:
         raise
     except Exception as e:

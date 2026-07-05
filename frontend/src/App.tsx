@@ -21,7 +21,9 @@ export default function App() {
   const [hasApiKey, setHasApiKey] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const [temperature, setTemperature] = useState(0.5)
-  const [backendOk, setBackendOk] = useState(true)
+  const [backendOk, setBackendOk] = useState(false)
+  const [backendStarting, setBackendStarting] = useState(true)
+  const [startupTimeout, setStartupTimeout] = useState(false)
 
   useEffect(() => {
     const savedTheme = localStorage.getItem(STORAGE_THEME) || 'warm'
@@ -57,13 +59,24 @@ export default function App() {
     }).catch(() => setHasApiKey(false))
   }, [refreshKey])
 
-  // Periodic backend health check
+  // Backend health check — fast poll during startup, slow poll after
   useEffect(() => {
-    const check = () => checkBackendHealth().then(setBackendOk)
+    const check = () => checkBackendHealth().then((ok) => {
+      setBackendOk(ok)
+      if (ok) setBackendStarting(false)
+    })
     check()
-    const id = setInterval(check, 15000)
+    const interval = backendStarting ? 1000 : 15000
+    const id = setInterval(check, interval)
     return () => clearInterval(id)
-  }, [])
+  }, [backendStarting])
+
+  // Startup timeout — show error after 30s of waiting
+  useEffect(() => {
+    if (!backendStarting) return
+    const id = setTimeout(() => setStartupTimeout(true), 30000)
+    return () => clearTimeout(id)
+  }, [backendStarting])
 
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme)
@@ -135,6 +148,44 @@ export default function App() {
     setActiveConversationId(conv.id)
     setRightView('chat')
   }, [])
+
+  // ── Full-screen loading overlay during initial backend startup ──────────
+  if (backendStarting && !backendOk) {
+    return (
+      <div className="flex items-center justify-center h-screen w-screen bg-[#1a1a2e]" style={{ fontFamily: 'system-ui, sans-serif' }}>
+        <div className="flex flex-col items-center gap-4">
+          <svg width="48" height="48" viewBox="0 0 80 80" fill="none" className="text-gray-500 animate-pulse">
+            <ellipse cx="40" cy="43" rx="22" ry="28" stroke="currentColor" strokeWidth="1.5" />
+            <circle cx="31" cy="36" r="3" fill="currentColor" />
+            <circle cx="49" cy="36" r="3" fill="currentColor" />
+            <path d="M34 47 Q40 53 46 47" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+          <span className="text-sm text-gray-500">
+            {startupTimeout
+              ? '后端启动超时，请检查程序是否被安全软件拦截'
+              : '正在启动后端服务...'}
+          </span>
+          {!startupTimeout && <span className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />}
+          {startupTimeout && (
+            <button
+              onClick={() => {
+                setStartupTimeout(false)
+                setBackendStarting(true)
+                checkBackendHealth().then((ok) => {
+                  setBackendOk(ok)
+                  if (ok) setBackendStarting(false)
+                  else setStartupTimeout(true)
+                })
+              }}
+              className="px-4 py-1.5 text-xs bg-[#f59e6b] text-white rounded hover:bg-[#e08a55] transition-colors"
+            >
+              重试
+            </button>
+          )}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col h-screen w-screen overflow-hidden">

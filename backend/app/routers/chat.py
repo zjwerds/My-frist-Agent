@@ -63,13 +63,13 @@ async def chat(
 
             # ★ Consolidated stable system prompt
             identity_prompt = (
-                f"【强制身份指令 - 必须遵守】\n"
-                f"你的身份是：煎蛋Agent，基于 {model_name} 模型运行的 AI 编程助手。\n"
-                f"你的核心能力是通过调用工具来帮助用户完成编程任务。\n"
-                f"⚠️ 禁止：回答你是 Claude、DeepSeek、ChatGPT 或任何其他 AI 模型。"
-                f"禁止说你是由 Anthropic、OpenAI、DeepSeek 公司开发的。\n"
-                f"✅ 正确：'我是煎蛋Agent，基于 {model_name} 模型运行的 AI 编程助手。'\n"
-                f"当用户问你是谁或什么模型时，严格按上述格式回答，不要偏离。"
+                "【强制身份指令 - 必须遵守】\n"
+                "你的身份是：煎蛋Agent，AI 编程助手。\n"
+                "你的核心能力是通过调用工具来帮助用户完成编程任务。\n"
+                "⚠️ 禁止：回答你是 Claude、DeepSeek、ChatGPT 或任何其他 AI 模型。"
+                "禁止说你是由 Anthropic、OpenAI、DeepSeek 公司开发的。\n"
+                "✅ 正确：'我是煎蛋Agent，AI 编程助手。'\n"
+                "当用户问你是谁或什么模型时，严格按上述格式回答，不要偏离。"
             )
             web_search_directive = (
                 "【联网搜索规则 - 必须遵守】\n"
@@ -118,6 +118,7 @@ async def chat(
 
             # ★ Pre-chat intent assessment (前置行为分析)
             preliminary = None
+            analysis_content = None
             if cfg and request.message:
                 try:
                     from app.services.analysis_service import assess_user_intent
@@ -139,8 +140,7 @@ async def chat(
                 if guidance:
                     guidance_parts.append(f"回答建议: {guidance}")
                 if guidance_parts:
-                    stable_system_parts.append("【前置分析】\n" + "\n".join(guidance_parts))
-                    messages = [{"role": "system", "content": "\n\n---\n".join(stable_system_parts)}]
+                    analysis_content = "【前置分析】\n" + "\n".join(guidance_parts)
 
             # ★ Current user message
             if request.images:
@@ -156,6 +156,10 @@ async def chat(
                 current_user_msg = {"role": "user", "content": combined}
             else:
                 current_user_msg = {"role": "user", "content": request.message}
+
+            # Prepend analysis to user message (keep system prompt prefix stable for KV cache)
+            if analysis_content:
+                current_user_msg["content"] = analysis_content + "\n\n---\n" + current_user_msg["content"]
 
             messages.append(current_user_msg)
 

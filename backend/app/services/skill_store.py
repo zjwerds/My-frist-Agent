@@ -15,10 +15,12 @@ TOOL_DIR = os.path.join(get_data_dir(), ".tools")
 
 # ── In-memory cache ──────────────────────────────────────────────────────
 _cache_skills: list[dict] | None = None
+_tool_cache: list[dict] | None = None
 
 def _clear_cache() -> None:
-    global _cache_skills
+    global _cache_skills, _tool_cache
     _cache_skills = None
+    _tool_cache = None
 
 # ── Seed data ───────────────────────────────────────────────────────────
 
@@ -1344,12 +1346,20 @@ def remove_skill(skill_id: str) -> bool:
 
 
 def get_enabled_tools() -> list[dict]:
-    """Return enabled function-type skills as tool_definition dicts for the AI."""
+    """Return enabled function-type skills as tool_definition dicts for the AI.
+
+    Result is cached in _tool_cache and cleared when any skill is toggled/removed.
+    """
+    global _tool_cache
+    if _tool_cache is not None:
+        return _tool_cache
     all_skills = list_skills()
     tools = []
     for s in all_skills:
         if s.get("enabled") and s.get("tool_definition"):
-            tools.append(s["tool_definition"])
+            td = s["tool_definition"]
+            tools.append(td)
+    _tool_cache = tools
     return tools
 
 
