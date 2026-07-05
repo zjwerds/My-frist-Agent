@@ -4,11 +4,11 @@ import os
 import logging
 from fastapi import APIRouter, Depends, Query, Body
 from fastapi.responses import StreamingResponse
-from app.services.tool_executor import PENDING_QUESTION_FILE, _clear_pending_question
+from app.services.tools import PENDING_QUESTION_FILE, _clear_pending_question
+from app.database import SessionLocal, get_db
 
 logger = logging.getLogger(__name__)
 from sqlalchemy.orm import Session
-from app.database import get_db
 from app.models.chat import ChatRequest
 from app.crud import history as history_crud
 from app.services import skill_store
@@ -33,7 +33,6 @@ async def chat(
 ):
     async def event_generator():
         # Create DB session inside generator so it lives as long as the SSE stream
-        from app.database import SessionLocal
         db = SessionLocal()
         try:
             # Save user message (JSON format if images present)
@@ -116,6 +115,32 @@ async def chat(
                             messages.append({"role": "tool", "content": m.content or ""})
                     except (json.JSONDecodeError, TypeError):
                         messages.append({"role": "tool", "content": m.content or ""})
+
+            # ★ Pre-chat intent assessment (前置行为分析)
+            preliminary = None
+            if cfg and request.message:
+                try:
+                    from app.services.analysis_service import assess_user_intent
+                    preliminary = await assess_user_intent(
+                        user_msg=request.message,
+                        api_key=cfg["api_key"],
+                        base_url=cfg.get("base_url", "https://api.deepseek.com"),
+                        model=model_name,
+                    )
+                except Exception:
+                    pass  # non-blocking
+
+            if preliminary:
+                guidance = preliminary.get("reply_guidance")
+                enriched = preliminary.get("enriched_question")
+                guidance_parts = []
+                if enriched:
+                    guidance_parts.append(f"用户真实意图: {enriched}")
+                if guidance:
+                    guidance_parts.append(f"回答建议: {guidance}")
+                if guidance_parts:
+                    stable_system_parts.append("【前置分析】\n" + "\n".join(guidance_parts))
+                    messages = [{"role": "system", "content": "\n\n---\n".join(stable_system_parts)}]
 
             # ★ Current user message
             if request.images:

@@ -1315,10 +1315,6 @@ def list_skills() -> list[dict]:
     return skills
 
 
-def get_skill(skill_id: str) -> dict | None:
-    return _read_file(_skill_path(skill_id))
-
-
 def toggle_skill(skill_id: str, enabled: bool) -> dict | None:
     path = _skill_path(skill_id)
     if not os.path.exists(path):

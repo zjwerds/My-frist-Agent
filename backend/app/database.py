@@ -1,6 +1,6 @@
 import os
 import logging
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, event
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from app.utils import get_data_dir
@@ -17,10 +17,13 @@ engine = create_engine(
     connect_args={"check_same_thread": False},
     echo=False,
 )
-# Enable foreign key enforcement at the database level
-with engine.connect() as conn:
-    conn.execute(text("PRAGMA foreign_keys = ON"))
-    conn.commit()
+
+@event.listens_for(engine, "connect")
+def _set_foreign_keys(dbapi_connection, connection_record):
+    """Enable foreign key enforcement on every new connection."""
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys = ON")
+    cursor.close()
 
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 

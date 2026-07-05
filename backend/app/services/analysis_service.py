@@ -4,14 +4,13 @@ import re
 import os
 import json
 import logging
-from datetime import datetime, timezone, timedelta
+from datetime import datetime
 from typing import Optional
-from app.utils import get_data_dir
+from app.utils import get_data_dir, BEIJING
 
 logger = logging.getLogger(__name__)
 
 ANALYSIS_DIR = os.path.join(get_data_dir(), "analysis")
-BEIJING = timezone(timedelta(hours=8))
 
 ANALYSIS_PROMPT = """你是一个对话质量分析器。分析以下问答对，输出 JSON 格式评估。
 

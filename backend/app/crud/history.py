@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from app.models.db_models import ConversationDB, MessageDB
@@ -47,7 +47,7 @@ def add_message(
 
     conv = db.query(ConversationDB).filter(ConversationDB.id == conv_id).first()
     if conv:
-        conv.updated_at = datetime.utcnow()
+        conv.updated_at = datetime.now(timezone.utc).replace(tzinfo=None)
         # Count only user messages to track turn count (tool messages excluded)
         if role == "user" and content:
             if conv.message_count == 0:
@@ -71,7 +71,7 @@ def edit_message(db: Session, msg_id: str, new_content: str) -> MessageDB | None
     if not msg:
         return None
     msg.content = new_content
-    msg.updated_at = datetime.utcnow()
+    msg.updated_at = datetime.now(timezone.utc).replace(tzinfo=None)
     db.commit()
     db.refresh(msg)
     return msg

@@ -2,10 +2,11 @@
 
 import json
 import os
+import re
 import threading
 import logging
-from datetime import datetime, timezone, timedelta
-from app.utils import get_data_dir
+from datetime import datetime
+from app.utils import get_data_dir, BEIJING
 
 logger = logging.getLogger(__name__)
 
@@ -13,19 +14,22 @@ MEMORY_DIR = os.path.join(get_data_dir(), "memories")
 MAX_CHARS = 90000
 KEEP_RECENT = 3
 MAX_SEARCH = 5
+_MAX_LOCKS = 1000
 
-BEIJING = timezone(timedelta(hours=8))
-
-# Simple per-conversation lock to prevent concurrent read-modify-write races
+# Per-conversation lock to prevent concurrent read-modify-write races
 _memory_locks: dict[str, threading.Lock] = {}
 _memory_locks_lock = threading.Lock()
 
 
 def _get_lock(conversation_id: str) -> threading.Lock:
     with _memory_locks_lock:
-        if conversation_id not in _memory_locks:
-            _memory_locks[conversation_id] = threading.Lock()
-        return _memory_locks[conversation_id]
+        lock = _memory_locks.get(conversation_id)
+        if lock is None:
+            if len(_memory_locks) >= _MAX_LOCKS:
+                _memory_locks.clear()
+            lock = threading.Lock()
+            _memory_locks[conversation_id] = lock
+        return lock
 
 
 def _ts() -> str:
@@ -33,7 +37,8 @@ def _ts() -> str:
 
 
 def _memory_path(conversation_id: str) -> str:
-    return os.path.join(MEMORY_DIR, f"conv_{conversation_id}.json")
+    safe_id = re.sub(r'[^a-zA-Z0-9_-]', '', conversation_id)
+    return os.path.join(MEMORY_DIR, f"conv_{safe_id}.json")
 
 
 def init_memories():

@@ -1,6 +1,6 @@
 import type { Conversation, Skill, ApiConfig } from '../types'
 
-const BASE_URL = '/api'
+const BASE_URL = 'http://127.0.0.1:8000/api'
 
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}${url}`, {
@@ -204,19 +204,17 @@ export function sendChatMessage(
           if (completed) break
         }
       } finally {
-        if (!completed) onDone()
+        onDone()
       }
     })
     .catch((err) => {
-      clearTimeout(timeoutId)
-      if (err.name !== 'AbortError') {
-        onError(err)
-      } else if (isTimedOut) {
-        onError(new Error('请求超时（120秒），请重试或简化任务'))
-      }
-      // Ensure onDone is always called so UI doesn't hang
-      onDone()
-    })
+    clearTimeout(timeoutId)
+    if (err.name !== 'AbortError') {
+      onError(err)
+    } else if (isTimedOut) {
+      onError(new Error('请求超时（120秒），请重试或简化任务'))
+    }
+  })
 
   return controller
 }
@@ -246,6 +244,13 @@ export const filesApi = {
     return request<{ success: boolean; path: string }>(`/files/create-file${params}`, {
       method: 'POST',
       body: JSON.stringify({ path, content }),
+    })
+  },
+  deleteFile: (path: string, root?: string) => {
+    const params = new URLSearchParams({ path })
+    if (root) params.set('root', root)
+    return request<{ success: boolean; path: string }>(`/files?${params}`, {
+      method: 'DELETE',
     })
   },
 }

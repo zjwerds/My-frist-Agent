@@ -1,7 +1,6 @@
 import sys
 import os
 import logging
-from datetime import timezone, timedelta
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fastapi import FastAPI
@@ -15,10 +14,10 @@ from app.services.analysis_service import generate_daily_report, _ensure_dir as 
 from app.routers import chat, history, skills, apis, stats, upload, files
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
+from app.utils import BEIJING
 
 logger = logging.getLogger(__name__)
 app = FastAPI(title="煎蛋Agent API", version="1.0.0")
-BEIJING = timezone(timedelta(hours=8))
 scheduler = AsyncIOScheduler()
 
 # CORS — 明确列出允许的 origins（不能与 allow_credentials=True 同时使用 "*"）
@@ -27,6 +26,7 @@ ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://localhost:8000",     # Backend self (for production build)
     "http://127.0.0.1:8000",
+    "null",                      # Electron file:// protocol
 ]
 
 app.add_middleware(

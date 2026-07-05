@@ -1,6 +1,5 @@
 import time
 import logging
-from functools import lru_cache
 from openai import OpenAI, AsyncOpenAI
 
 logger = logging.getLogger(__name__)

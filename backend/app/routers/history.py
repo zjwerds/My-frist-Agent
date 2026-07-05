@@ -27,7 +27,7 @@ def list_conversations(project_path: str | None = Query(None), db: Session = Dep
 def get_conversation(conv_id: str, db: Session = Depends(get_db)):
     conv = crud.get_conversation(db, conv_id)
     if not conv:
-        return {"error": "Conversation not found"}, 404
+        raise HTTPException(status_code=404, detail="Conversation not found")
 
     msgs = get_messages(db, conv_id)
     return {
@@ -73,7 +73,7 @@ def delete_conversation(conv_id: str, db: Session = Depends(get_db)):
 def rename_conversation(conv_id: str, body: dict, db: Session = Depends(get_db)):
     conv = crud.get_conversation(db, conv_id)
     if not conv:
-        return {"error": "Not found"}, 404
+        raise HTTPException(status_code=404, detail="Conversation not found")
     conv.title = body.get("title", conv.title)
     db.commit()
     return {"success": True}

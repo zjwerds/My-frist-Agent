@@ -233,3 +233,35 @@ def create_file(body: dict, root: str | None = Query(None, description="Project 
         raise HTTPException(403, "无权限创建该文件")
     except Exception as e:
         raise HTTPException(500, str(e))
+
+
+@router.delete("")
+def delete_file(path: str = Query(...), root: str | None = Query(None, description="Project root path")):
+    """Delete a file or empty directory at the given path."""
+    try:
+        p = _resolve_path(path, root)
+        if not p.exists():
+            raise HTTPException(404, f"路径不存在: {path}")
+
+        # Security: prevent deleting workspace root or project root
+        workspace = WORKSPACE_ROOT.resolve()
+        agent_root = workspace.parent
+        if p == workspace or p == agent_root:
+            raise HTTPException(403, "不允许删除项目根目录")
+
+        if p.is_dir():
+            # Only allow deleting empty directories for safety
+            try:
+                p.rmdir()
+            except OSError:
+                raise HTTPException(409, "目录非空，无法删除（请先删除其中的文件）")
+        else:
+            p.unlink()
+
+        return {"success": True, "path": _get_base_rel(p, root)}
+    except HTTPException:
+        raise
+    except PermissionError:
+        raise HTTPException(403, "无权限删除该路径")
+    except Exception as e:
+        raise HTTPException(500, str(e))

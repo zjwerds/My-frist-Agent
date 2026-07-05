@@ -2,7 +2,7 @@ import json
 import asyncio
 import logging
 from app.services.deepseek_service import create_async_client, chat_completion_stream_async
-from app.services.tool_executor import execute_tool
+from app.services.tools import execute_tool
 
 logger = logging.getLogger(__name__)
 

@@ -289,10 +289,11 @@ interface TreeNodeProps {
   dirCache: Record<string, FileEntry[]>
   onToggle: (dirPath: string) => void
   onOpenFile: (path: string) => void
+  onDelete: (entry: FileEntry) => void
   depth: number
 }
 
-function TreeNode({ entry, expandedDirs, dirCache, onToggle, onOpenFile, depth }: TreeNodeProps) {
+function TreeNode({ entry, expandedDirs, dirCache, onToggle, onOpenFile, onDelete, depth }: TreeNodeProps) {
   const isDir = entry.type === 'dir'
   const isExpanded = isDir && expandedDirs.has(entry.path)
   const children = isDir && isExpanded ? (dirCache[entry.path] || []) : []
@@ -307,7 +308,7 @@ function TreeNode({ entry, expandedDirs, dirCache, onToggle, onOpenFile, depth }
     <>
       <button
         onClick={handleClick}
-        className="w-full flex items-center gap-1.5 px-3 py-1 text-xs text-gray-400 hover:text-white hover:bg-[#1e1e3a] rounded-md transition-colors text-left"
+        className="w-full flex items-center gap-1.5 px-3 py-1 text-xs text-gray-400 hover:text-white hover:bg-[#1e1e3a] rounded-md transition-colors text-left group"
         title={entry.path}
         style={{ paddingLeft: `${12 + depth * 14}px` }}
       >
@@ -323,6 +324,15 @@ function TreeNode({ entry, expandedDirs, dirCache, onToggle, onOpenFile, depth }
         {!isDir && (
           <span className="text-[9px] text-gray-600 flex-shrink-0">{formatSize(entry.size)}</span>
         )}
+        <button
+          onClick={(e) => { e.stopPropagation(); onDelete(entry) }}
+          className="opacity-0 group-hover:opacity-100 p-0.5 text-gray-600 hover:text-red-400 transition-all shrink-0"
+          title={isDir ? '删除文件夹' : '删除文件'}
+        >
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
       </button>
       {isExpanded && (
         <div className="space-y-0.5">
@@ -339,6 +349,7 @@ function TreeNode({ entry, expandedDirs, dirCache, onToggle, onOpenFile, depth }
                 dirCache={dirCache}
                 onToggle={onToggle}
                 onOpenFile={onOpenFile}
+                onDelete={onDelete}
                 depth={depth + 1}
               />
             ))
@@ -362,6 +373,8 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
   const [newProjectName, setNewProjectName] = useState('')
   const [creatingProject, setCreatingProject] = useState(false)
   const [dragOver, setDragOver] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<FileEntry | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   // ── Drag & drop ──────────────────────────────────────────────────
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -417,6 +430,47 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
     setCreating(null)
     setNewItemName('')
   }
+
+  const handleDelete = useCallback(async (entry: FileEntry) => {
+    if (!currentProjectPath) return
+    // Immediate soft delete for empty directories; confirm for files and non-empty dirs
+    if (entry.type === 'dir') {
+      setDeleteTarget(entry)
+      return
+    }
+    // File: confirm then delete
+    if (!window.confirm(`确认删除文件「${entry.name}」？\n此操作不可撤销。`)) return
+    setDeleting(true)
+    try {
+      await filesApi.deleteFile(entry.path, currentProjectPath)
+      // Refresh root directory
+      const res = await filesApi.listDir('.', currentProjectPath)
+      setEntries(res.entries)
+      setDirCache({})
+      setExpandedDirs(new Set())
+    } catch (err: any) {
+      setError(err.message || '删除失败')
+    } finally {
+      setDeleting(false)
+    }
+  }, [currentProjectPath])
+
+  const confirmDeleteDir = useCallback(async () => {
+    if (!deleteTarget || !currentProjectPath) return
+    setDeleting(true)
+    setDeleteTarget(null)
+    try {
+      await filesApi.deleteFile(deleteTarget.path, currentProjectPath)
+      const res = await filesApi.listDir('.', currentProjectPath)
+      setEntries(res.entries)
+      setDirCache({})
+      setExpandedDirs(new Set())
+    } catch (err: any) {
+      setError(err.message || '删除失败')
+    } finally {
+      setDeleting(false)
+    }
+  }, [deleteTarget, currentProjectPath])
 
   useEffect(() => {
     if (creating) newItemInputRef.current?.focus()
@@ -709,12 +763,43 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
                     dirCache={dirCache}
                     onToggle={toggleDir}
                     onOpenFile={handleFileOpen}
+                    onDelete={handleDelete}
                     depth={0}
                   />
                 ))}
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Delete confirmation dialog */}
+      {deleteTarget && (
+        <div className="px-3 py-2 border-t border-[#2a2a4a]">
+          {deleting ? (
+            <div className="text-xs text-gray-500 text-center">删除中...</div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <div className="text-[11px] text-gray-300">
+                确认删除 <span className="text-red-400 font-medium">{deleteTarget.name}</span> ？
+                <div className="text-[10px] text-gray-500 mt-0.5">此操作不可撤销。</div>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={confirmDeleteDir}
+                  className="flex-1 px-2 py-1 text-[10px] text-white bg-red-500/80 hover:bg-red-500 rounded transition-colors"
+                >
+                  删除
+                </button>
+                <button
+                  onClick={() => setDeleteTarget(null)}
+                  className="px-3 py-1 text-[10px] text-gray-400 hover:text-white transition-colors"
+                >
+                  取消
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

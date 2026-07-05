@@ -1,7 +1,10 @@
-"""Shared utilities — path resolution for PyInstaller and dev modes."""
+"""Shared utilities — path resolution, timezone constants."""
 
 import sys
 import os
+from datetime import timezone, timedelta
+
+BEIJING = timezone(timedelta(hours=8))
 
 
 def get_data_dir() -> str:

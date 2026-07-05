@@ -13,7 +13,7 @@ Configuration structure (v2):
 import json
 import os
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from app.utils import get_data_dir
 
 logger = logging.getLogger(__name__)
@@ -67,31 +67,6 @@ def read_config() -> dict | None:
     }
 
 
-def read_full_config() -> dict | None:
-    """Return the full structured config (including meta/api/auth sections)."""
-    raw = _read_raw()
-    if raw is None:
-        return None
-    # Upgrade legacy format on the fly
-    if "auth" not in raw and "api" not in raw:
-        raw = {
-            "meta": {
-                "version": "2.0.0",
-                "description": "煎蛋Agent 配置",
-                "last_updated": datetime.utcnow().strftime("%Y-%m-%d"),
-            },
-            "auth": {
-                "api_key": raw.get("api_key", ""),
-                "key_source": "file",
-            },
-            "api": {
-                "base_url": raw.get("base_url", _DEFAULTS["base_url"]),
-                "model": raw.get("model", _DEFAULTS["model"]),
-                "timeout_ms": 30000,
-                "max_retries": 3,
-            },
-        }
-    return raw
 
 
 def write_config(api_key: str, base_url: str, model: str) -> dict:
@@ -103,7 +78,7 @@ def write_config(api_key: str, base_url: str, model: str) -> dict:
         "meta": {
             "version": "2.0.0",
             "description": "煎蛋Agent 配置",
-            "last_updated": datetime.utcnow().strftime("%Y-%m-%d"),
+            "last_updated": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
         },
         "auth": {
             "api_key": api_key,
