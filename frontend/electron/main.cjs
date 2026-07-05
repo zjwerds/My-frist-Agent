@@ -235,6 +235,18 @@ function runElectron(electron) {
 
     mainWindow.once('ready-to-show', () => mainWindow.show())
 
+    // Handle page load failures in production mode
+    mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
+      if (!isDev && errorDescription !== 'ERR_ABORTED') {
+        console.error(`[main] Page load failed: ${errorDescription} (${errorCode})`)
+        mainWindow.loadURL(`data:text/html;charset=utf-8,
+          <html><body style="background:#1a1a2e;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;margin:0;font-family:system-ui,sans-serif;">
+          <p style="color:#f59e6b;font-size:16px;margin-bottom:8px;">加载失败</p>
+          <p style="color:#888;font-size:13px;">页面资源加载失败，请重新启动应用。<br>如持续出现，请重新安装程序。</p>
+          </body></html>`)
+      }
+    })
+
     mainWindow.on('maximize', () => mainWindow.webContents.send('window-maximize-changed', true))
     mainWindow.on('unmaximize', () => mainWindow.webContents.send('window-maximize-changed', false))
 
@@ -306,6 +318,11 @@ function runElectron(electron) {
     })
     return result.canceled ? null : result.filePaths[0]
   })
+
+  // ── GPU compatibility — allow software rendering fallback ──────────────
+
+  app.commandLine.appendSwitch('disable-gpu')
+  app.commandLine.appendSwitch('disable-software-rasterizer')
 
   // ── App lifecycle ──────────────────────────────────────────────────────────
 
