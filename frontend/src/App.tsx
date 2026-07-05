@@ -163,7 +163,6 @@ export default function App() {
         hasBg={!!bgImage}
         temperature={temperature}
         onTemperatureChange={handleTemperatureChange}
-        backendOk={backendOk}
       />
       <div
         className="flex flex-1 overflow-hidden relative"

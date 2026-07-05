@@ -40,7 +40,7 @@ interface TitleBarProps {
 
 const electronAPI = (window as unknown as { electronAPI?: { minimize?: () => void; maximize?: () => void; close?: () => void; isMaximized?: () => Promise<boolean>; onMaximizeChange?: (cb: (maximized: boolean) => void) => () => void } }).electronAPI
 
-export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, onApiConfigSaved, activeConversationId, currentProjectPath, onSelectConversation, onDeleteConversation, refreshKey, onBgUpload, onBgRemove, hasBg, temperature, onTemperatureChange, backendOk }: TitleBarProps) {
+export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, onApiConfigSaved, activeConversationId, currentProjectPath, onSelectConversation, onDeleteConversation, refreshKey, onBgUpload, onBgRemove, hasBg, temperature, onTemperatureChange }: TitleBarProps) {
   const [openMenu, setOpenMenu] = useState<MenuId | null>(null)
   const [isMaximized, setIsMaximized] = useState(false)
   const barRef = useRef<HTMLDivElement>(null)
@@ -214,12 +214,6 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
         <span className="text-xs font-mono text-gray-300 w-8 text-right shrink-0">
           {(temperature ?? 0.5).toFixed(2)}
         </span>
-      </div>
-
-      {/* ── Backend status indicator ── */}
-      <div className="flex items-center gap-1.5 mr-1" title={backendOk ? '后端服务正常' : '后端服务未连接'} style={{ WebkitAppRegion: 'no-drag' } as any}>
-        <span className={`inline-block w-2 h-2 rounded-full ${backendOk ? 'bg-green-500' : 'bg-red-500'}`} />
-        <span className="text-[10px] text-gray-500">{backendOk ? '已连接' : '未连接'}</span>
       </div>
 
       {/* ── API Config Popover (status dot + edit icon) ── */}

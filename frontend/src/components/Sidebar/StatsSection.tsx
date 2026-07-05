@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 
+const STATS_URL = 'http://127.0.0.1:8000/api/stats'
+
 interface Stats {
   balance?: string
   currency?: string
@@ -54,7 +56,7 @@ export function StatsSection() {
 
   const fetchStats = useCallback(async () => {
     try {
-      const res = await fetch('/api/stats')
+      const res = await fetch(STATS_URL)
       if (res.ok) {
         setStats(await res.json())
         setFetchError(null)
