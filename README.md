@@ -11,7 +11,7 @@
   <a href="#-快速开始">快速开始</a>
 </p>
 
-<img src="screenshots/微信好友二维码.jpg" width="150" alt="微信好友二维码"/>
+<img src="screenshots/微信好友二维码.jpg" width="240" alt="微信好友二维码"/>
 
 </div>
 
@@ -149,7 +149,7 @@ npm run pack     # PyInstaller + electron-builder
 
 <div align="center">
 
-<img src="screenshots/微信好友二维码.jpg" width="120" alt="微信"/>
+<img src="screenshots/微信好友二维码.jpg" width="240" alt="微信"/>
 
 **交流反馈 · 扫码联系**
 
