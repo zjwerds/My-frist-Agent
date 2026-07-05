@@ -140,7 +140,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
     <div
       ref={barRef}
       className="flex items-center h-[34px] bg-[#0d0d1a] select-none shrink-0"
-      style={{ WebkitAppRegion: 'drag' } as any}
+      style={{ appRegion: 'drag', WebkitAppRegion: 'drag' } as any}
       onDoubleClick={handleDoubleClick}
     >
       {/* ── App Icon (煎蛋) ── */}
@@ -162,6 +162,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
                   ? 'bg-[#1e1e3a] text-white'
                   : 'text-gray-400 hover:bg-[#1a1a30] hover:text-gray-200'
               }`}
+              style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag' } as any}
               onClick={() => toggleMenu(id)}
             >
               {menu.label}
@@ -182,7 +183,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
                   return (
                     <button
                       key={idx}
-                      style={{ WebkitAppRegion: 'no-drag' } as any}
+                      style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag' } as any}
                       className="w-full px-3 py-1.5 text-left text-xs text-gray-300 hover:bg-[#2a2a4a] hover:text-white transition-colors"
                       onClick={item.action}
                     >
@@ -197,7 +198,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
       </div>
 
       {/* ── Temperature slider ── */}
-      <div className="flex-1 flex items-center justify-end gap-2 px-4" style={{ WebkitAppRegion: 'no-drag' } as any}>
+      <div className="flex-1 flex items-center justify-end gap-2 px-4" style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag' } as any}>
         <span className="text-[10px] text-gray-500 whitespace-nowrap shrink-0" title="控制AI回复的创造性：越低越精确，越高越发散">发散</span>
         <input
           type="range"
@@ -218,12 +219,12 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
       </div>
 
       {/* ── API Config Popover (status dot + edit icon) ── */}
-      <div style={{ WebkitAppRegion: 'no-drag' } as any}>
+      <div style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag' } as any}>
         <ApiConfigPopover onSaved={onApiConfigSaved} />
       </div>
 
       {/* ── Conversation History Popover ── */}
-      <div style={{ WebkitAppRegion: 'no-drag' } as any}>
+      <div style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag' } as any}>
         <ConversationPopover
           activeConversationId={activeConversationId ?? null}
           currentProjectPath={currentProjectPath ?? null}
@@ -237,12 +238,12 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
       </div>
 
       {/* ── Skills Popover (standalone, always visible) ── */}
-      <div style={{ WebkitAppRegion: 'no-drag' } as any}>
+      <div style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag' } as any}>
         <SkillsPopover />
       </div>
 
       {/* ── Settings Popover (Theme & Background only) ── */}
-      <div className="mr-1" style={{ WebkitAppRegion: 'no-drag' } as any}>
+      <div className="mr-1" style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag' } as any}>
         <SettingsPopover
           theme={theme}
           onThemeChange={onThemeChange}
@@ -254,7 +255,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
 
       {/* ── Window Controls ── */}
       {electronAPI && (
-        <div className="flex h-full" style={{ WebkitAppRegion: 'no-drag' } as any}>
+        <div className="flex h-full" style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag' } as any}>
           <button
             className="w-[46px] h-full flex items-center justify-center text-gray-400 hover:bg-[#1a1a30] hover:text-white text-xs transition-colors"
             onClick={handleMinimize}
