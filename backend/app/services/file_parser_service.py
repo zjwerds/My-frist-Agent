@@ -79,7 +79,7 @@ def parse_pdf(file_bytes: bytes, filename: str = "") -> dict:
 # ── Word ─────────────────────────────────────────────────────────────
 
 def parse_docx(file_bytes: bytes, filename: str = "") -> dict:
-    """Extract paragraphs from .docx file."""
+    """Extract paragraphs and table content from .docx file."""
     try:
         from docx import Document
     except ImportError:
@@ -90,8 +90,25 @@ def parse_docx(file_bytes: bytes, filename: str = "") -> dict:
     except Exception as e:
         return {"error": f"无法打开 Word 文件: {e}"}
 
-    paragraphs = [p.text for p in doc.paragraphs if p.text.strip()]
-    full_text = "\n\n".join(paragraphs)
+    parts: list[str] = []
+
+    # Paragraphs
+    for p in doc.paragraphs:
+        t = p.text.strip()
+        if t:
+            parts.append(t)
+
+    # Tables (resumes, forms often put content in tables)
+    for table in doc.tables:
+        rows_text: list[str] = []
+        for row in table.rows:
+            cells = [cell.text.strip() for cell in row.cells if cell.text.strip()]
+            if cells:
+                rows_text.append(" | ".join(cells))
+        if rows_text:
+            parts.append("[表格]\n" + "\n".join(rows_text))
+
+    full_text = "\n\n".join(parts)
 
     if not full_text:
         return {
@@ -106,7 +123,7 @@ def parse_docx(file_bytes: bytes, filename: str = "") -> dict:
     return {
         "filename": filename,
         "text": truncated,
-        "paragraphs": len(paragraphs),
+        "paragraphs": len(parts),
         "size": len(full_text),
     }
 

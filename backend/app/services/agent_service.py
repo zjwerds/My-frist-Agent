@@ -98,7 +98,7 @@ async def run_agent_stream(
             return
 
         # Process tool calls
-        current_messages.append({"role": "assistant", "content": response_text or None, "tool_calls": tool_calls})
+        current_messages.append({"role": "assistant", "content": response_text or "", "tool_calls": tool_calls})
 
         for tc in tool_calls:
             tool_name = tc["function"]["name"]

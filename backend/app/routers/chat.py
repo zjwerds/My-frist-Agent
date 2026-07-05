@@ -35,13 +35,7 @@ async def chat(
         # Create DB session inside generator so it lives as long as the SSE stream
         db = SessionLocal()
         try:
-            # Save user message (JSON format if images present)
-            if not request.edit_mode:
-                if request.images:
-                    user_content = json.dumps({"text": request.message, "images": request.images}, ensure_ascii=False)
-                else:
-                    user_content = request.message
-                history_crud.add_message(db, conversation_id, "user", user_content)
+            # Save user message will happen after intent analysis (for cache stability)
 
             # Read API config from config.json only
             cfg = config_file.read_config()
@@ -92,6 +86,12 @@ async def chat(
             for m in db_messages:
                 if m.role == "user":
                     if m.content and m.content.startswith("{"):
+                        try:
+                            parsed = json.loads(m.content)
+                            text = parsed.get("text", "")
+                            messages.append({"role": "user", "content": text or "[图片]"})
+                        except json.JSONDecodeError:
+                            messages.append({"role": "user", "content": "[图片]"})
                         continue
                     messages.append({"role": "user", "content": m.content or ""})
                 elif m.role == "assistant" and m.tool_calls:
@@ -160,6 +160,14 @@ async def chat(
             # Prepend analysis to user message (keep system prompt prefix stable for KV cache)
             if analysis_content:
                 current_user_msg["content"] = analysis_content + "\n\n---\n" + current_user_msg["content"]
+
+            # Save user message (use enhanced content for cache prefix stability)
+            if not request.edit_mode:
+                if request.images:
+                    content_to_save = json.dumps({"text": current_user_msg["content"], "images": request.images}, ensure_ascii=False)
+                else:
+                    content_to_save = current_user_msg["content"]
+                history_crud.add_message(db, conversation_id, "user", content_to_save)
 
             messages.append(current_user_msg)
 

@@ -53,8 +53,10 @@ function RefreshIcon() {
 export function StatsSection() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [fetchError, setFetchError] = useState<string | null>(null)
+  const [refreshing, setRefreshing] = useState(false)
 
   const fetchStats = useCallback(async () => {
+    setRefreshing(true)
     try {
       const res = await fetch(STATS_URL)
       if (res.ok) {
@@ -65,12 +67,14 @@ export function StatsSection() {
       }
     } catch (e) {
       setFetchError(e instanceof Error ? e.message : '网络错误')
+    } finally {
+      setRefreshing(false)
     }
   }, [])
 
   useEffect(() => {
     fetchStats()
-    const interval = setInterval(fetchStats, 30000)
+    const interval = setInterval(fetchStats, 10000)
     return () => clearInterval(interval)
   }, [fetchStats])
 
@@ -152,10 +156,13 @@ export function StatsSection() {
             {/* Refresh */}
             <button
               onClick={fetchStats}
-              className="w-full flex items-center justify-center gap-1 text-[10px] text-gray-500 hover:text-gray-300 pt-0.5 transition-colors"
+              disabled={refreshing}
+              className="w-full flex items-center justify-center gap-1 text-[10px] text-gray-500 hover:text-gray-300 pt-0.5 transition-colors disabled:opacity-50"
             >
-              <RefreshIcon />
-              刷新
+              <span className={refreshing ? 'animate-spin' : ''}>
+                <RefreshIcon />
+              </span>
+              {refreshing ? '刷新中...' : '刷新'}
             </button>
           </div>
         )}

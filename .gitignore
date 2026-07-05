@@ -34,6 +34,9 @@ backend/agent.db
 backend/stats.json
 backend/*.db
 backend/tasks.json
+backend/config.json
+backend/analysis/
+backend/memories/
 
 # Env
 .env

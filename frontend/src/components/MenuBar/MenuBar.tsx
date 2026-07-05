@@ -156,7 +156,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
       <div className="flex items-center h-full">
         {(Object.entries(menus) as [MenuId, typeof menus[MenuId]][]).map(([id, menu]) => (
           <div key={id} className="relative h-full">
-            <button style={{ WebkitAppRegion: 'no-drag' } as any}
+            <button
               className={`px-3 h-full text-xs transition-colors ${
                 openMenu === id
                   ? 'bg-[#1e1e3a] text-white'
@@ -182,6 +182,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
                   return (
                     <button
                       key={idx}
+                      style={{ WebkitAppRegion: 'no-drag' } as any}
                       className="w-full px-3 py-1.5 text-left text-xs text-gray-300 hover:bg-[#2a2a4a] hover:text-white transition-colors"
                       onClick={item.action}
                     >

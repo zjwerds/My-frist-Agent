@@ -2,6 +2,7 @@
 
 import json
 import os
+import time
 import threading
 import logging
 import urllib.request
@@ -74,14 +75,28 @@ def fetch_balance(api_key: str, base_url: str = "https://api.deepseek.com") -> d
         return None
 
 
+_balance_cache: dict = {}
+_balance_cache_time: float = 0
+_BALANCE_CACHE_TTL = 60  # seconds
+
+
 def get_stats(api_key: str | None = None, base_url: str | None = None) -> dict:
     stats = _read_stats()
     total_prompt = stats["total_prompt_tokens"]
     cache_hit = stats["total_cache_hit_tokens"]
     stats["cache_hit_rate"] = round(cache_hit / total_prompt, 4) if total_prompt > 0 else 0.0
+
     if api_key:
-        balance = fetch_balance(api_key, base_url or "https://api.deepseek.com")
-        if balance:
-            stats["balance"] = balance["balance"]
-            stats["currency"] = balance["currency"]
+        global _balance_cache, _balance_cache_time
+        now = time.time()
+        if _balance_cache and (now - _balance_cache_time) < _BALANCE_CACHE_TTL:
+            stats["balance"] = _balance_cache["balance"]
+            stats["currency"] = _balance_cache["currency"]
+        else:
+            balance = fetch_balance(api_key, base_url or "https://api.deepseek.com")
+            if balance:
+                _balance_cache = balance
+                _balance_cache_time = now
+                stats["balance"] = balance["balance"]
+                stats["currency"] = balance["currency"]
     return stats
