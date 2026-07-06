@@ -162,6 +162,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
                   ? 'bg-[#1e1e3a] text-white'
                   : 'text-gray-400 hover:bg-[#1a1a30] hover:text-gray-200'
               }`}
+              style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag' } as any}
               onClick={() => toggleMenu(id)}
             >
               {menu.label}
@@ -197,7 +198,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
       </div>
 
       {/* ── Temperature slider ── */}
-      <div className="flex-1 flex items-center justify-end gap-2 px-4" style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag' } as any}>
+      <div className="flex-1 flex items-center justify-end gap-2 px-4">
         <span className="text-[10px] text-gray-500 whitespace-nowrap shrink-0" title="控制AI回复的创造性：越低越精确，越高越发散">发散</span>
         <input
           type="range"
@@ -207,6 +208,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
           value={temperature ?? 0.5}
           onChange={(e) => onTemperatureChange?.(parseFloat(e.target.value))}
           className="w-28 h-1.5 cursor-pointer rounded-full appearance-none temp-slider"
+          style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag' } as any}
           style={{
             background: `linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899, #ef4444)`,
           }}
