@@ -61,29 +61,51 @@ export default function App() {
 
   // Backend health check — fast poll during startup, slow poll after
   useEffect(() => {
+    let confirmTimer: ReturnType<typeof setTimeout> | null = null
+
     const check = () => checkBackendHealth().then((ok) => {
-      setBackendOk(ok)
-      if (ok) setBackendStarting(false)
+      if (ok) {
+        setBackendOk(true)
+        if (backendStarting) setBackendStarting(false)
+      } else if (!backendStarting) {
+        // Backend was running, now appears down.
+        // The watchdog may restart it within 1-2 seconds,
+        // so confirm before showing the red banner (avoid flicker).
+        if (confirmTimer === null) {
+          confirmTimer = setTimeout(() => {
+            confirmTimer = null
+            checkBackendHealth().then((ok2) => {
+              if (!ok2) setBackendOk(false)
+            })
+          }, 2500)
+        }
+      }
     })
     check()
-    const interval = backendStarting ? 1000 : 15000
+    const interval = backendStarting ? 1000 : 5000
     const id = setInterval(check, interval)
-
-    // Also listen for push health events from Electron main process
-    const electronAPI = (window as unknown as { electronAPI?: { onBackendHealth?: (cb: (ok: boolean) => void) => () => void } }).electronAPI
-    let unsub: (() => void) | undefined
-    if (electronAPI?.onBackendHealth) {
-      unsub = electronAPI.onBackendHealth((ok: boolean) => {
-        setBackendOk(ok)
-        if (ok) setBackendStarting(false)
-      })
-    }
 
     return () => {
       clearInterval(id)
-      if (unsub) unsub()
+      if (confirmTimer !== null) clearTimeout(confirmTimer)
     }
   }, [backendStarting])
+
+  // IPC health listener — registered once on mount, independent of polling lifecycle
+  // Only sets ok=true (recovery); defers ok=false to polling (which has confirmation delay)
+  useEffect(() => {
+    const electronAPI = (window as unknown as { electronAPI?: { onBackendHealth?: (cb: (ok: boolean) => void) => () => void } }).electronAPI
+    if (electronAPI?.onBackendHealth) {
+      return electronAPI.onBackendHealth((ok: boolean) => {
+        if (ok) {
+          setBackendOk(true)
+          if (backendStarting) setBackendStarting(false)
+        }
+        // When IPC says false — let the polling handle it
+        // (polling has a 2.5s confirmation guard to avoid watchdog flicker)
+      })
+    }
+  }, [])
 
   // Startup timeout — show error after 30s of waiting
   useEffect(() => {
@@ -109,8 +131,8 @@ export default function App() {
   }
 
   const handleMessageComplete = () => setRefreshKey((k) => k + 1)
-  const handleUsage = (usage: { prompt_tokens: number; completion_tokens: number; cache_hit_tokens: number }) => {
-    console.log('[usage]', usage)
+  const handleUsage = (_usage: { prompt_tokens: number; completion_tokens: number; cache_hit_tokens: number }) => {
+    // usage logged server-side; no-op in production
   }
   const handleSelectApi = () => setRightView('api-config')
   const handleBackToChat = () => setRightView('chat')
