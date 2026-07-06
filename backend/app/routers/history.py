@@ -54,7 +54,7 @@ def get_conversation(conv_id: str, db: Session = Depends(get_db)):
                 "tool_calls": m.tool_calls,
                 "created_at": m.created_at.isoformat() if m.created_at else "",
             }
-            for m in msgs
+            for m in msgs if m.role != 'tool' and not (m.role == 'assistant' and m.tool_calls is not None)
         ],
     }
 
@@ -130,7 +130,7 @@ def branch_conversation(conv_id: str, from_msg_id: str = Query(...), db: Session
                 "tool_calls": m.tool_calls,
                 "created_at": m.created_at.isoformat() if m.created_at else "",
             }
-            for m in msgs
+            for m in msgs if m.role != 'tool' and not (m.role == 'assistant' and m.tool_calls is not None)
         ],
     }
 
