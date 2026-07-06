@@ -9,6 +9,7 @@ interface MessageListProps {
   toolStatus: string | null
   onEdit?: (messageId: string, currentContent: string) => void
   onBranch?: (messageId: string) => void
+  currentProjectPath?: string | null
 }
 
 function EmptyState() {
@@ -34,7 +35,7 @@ function EmptyState() {
   )
 }
 
-export function MessageList({ messages, streamingContent, isLoading, toolStatus, onEdit, onBranch }: MessageListProps) {
+export function MessageList({ messages, streamingContent, isLoading, toolStatus, onEdit, onBranch, currentProjectPath }: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -48,7 +49,7 @@ export function MessageList({ messages, streamingContent, isLoading, toolStatus,
       )}
 
       {messages.map((msg) => (
-        <MessageBubble key={msg.id} message={msg} onEdit={onEdit} onBranch={onBranch} />
+        <MessageBubble key={msg.id} message={msg} onEdit={onEdit} onBranch={onBranch} currentProjectPath={currentProjectPath} />
       ))}
 
       {/* Streaming message */}
@@ -61,6 +62,7 @@ export function MessageList({ messages, streamingContent, isLoading, toolStatus,
             created_at: '',
           }}
           isStreaming
+          currentProjectPath={currentProjectPath}
         />
       )}
 

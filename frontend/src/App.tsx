@@ -4,7 +4,7 @@ import { Sidebar } from './components/Sidebar/Sidebar'
 import { RightPanel } from './components/RightPanel/RightPanel'
 import { FileViewer } from './components/RightPanel/FileViewer'
 import { MenuBar } from './components/MenuBar/MenuBar'
-import { historyApi, filesApi, checkBackendHealth } from './api/client'
+import { historyApi, filesApi, skillsApi, checkBackendHealth } from './api/client'
 
 const STORAGE_THEME = 'color-theme'
 const STORAGE_BG = 'bg-image'
@@ -23,6 +23,7 @@ export default function App() {
   const [backendOk, setBackendOk] = useState(false)
   const [backendStarting, setBackendStarting] = useState(true)
   const [startupTimeout, setStartupTimeout] = useState(false)
+  const [showSkillReminder, setShowSkillReminder] = useState(false)
 
   useEffect(() => {
     const savedTheme = localStorage.getItem(STORAGE_THEME) || 'warm'
@@ -105,6 +106,16 @@ export default function App() {
     const id = setTimeout(() => setStartupTimeout(true), 30000)
     return () => clearTimeout(id)
   }, [backendStarting])
+
+  // Check skill status after backend is ready
+  useEffect(() => {
+    if (!backendOk) return
+    if (localStorage.getItem('skill-reminder-dismissed')) return
+    skillsApi.list().then((skills) => {
+      const hasEnabled = skills.some((s) => s.enabled)
+      if (!hasEnabled) setShowSkillReminder(true)
+    }).catch(() => {})
+  }, [backendOk])
 
   const handleThemeChange = (newTheme: string) => {
     setTheme(newTheme)
@@ -239,6 +250,32 @@ export default function App() {
         temperature={temperature}
         onTemperatureChange={handleTemperatureChange}
       />
+      {/* Skill reminder banner */}
+      {showSkillReminder && (
+        <div className="flex items-center gap-3 px-4 py-2 bg-[#2a2a4a] border-b border-[#3a3a5a] text-sm">
+          <span className="text-xs text-gray-300">
+            💡 你还没有启用任何技能。前往 <strong>工具 → 技能管理</strong> 选择你需要的技能以获得更好体验
+          </span>
+          <button
+            onClick={() => {
+              localStorage.setItem('skill-reminder-dismissed', 'true')
+              setShowSkillReminder(false)
+            }}
+            className="ml-auto text-[10px] text-gray-500 hover:text-white transition-colors shrink-0"
+          >
+            不再提示
+          </button>
+          <button
+            onClick={() => setShowSkillReminder(false)}
+            className="text-gray-500 hover:text-white transition-colors shrink-0"
+            title="关闭"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
       <div
         className="flex flex-1 overflow-hidden relative"
         style={{
@@ -274,6 +311,7 @@ export default function App() {
           onNewConversation={handleNewConversation}
           temperature={temperature}
           onSwitchConversation={handleSwitchConversation}
+          currentProjectPath={currentProjectPath}
         />
         {activeFilePath && (
           <FileViewer

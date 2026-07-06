@@ -1,54 +1,175 @@
 import { useState, useMemo } from 'react'
 import type { Message } from '../../types'
+import { filesApi } from '../../api/client'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 interface MessageBubbleProps {
   message: Message
   isStreaming?: boolean
   onEdit?: (messageId: string, currentContent: string) => void
   onBranch?: (messageId: string) => void
+  currentProjectPath?: string | null
 }
 
 const FILE_REF_RE = /^\[([📄📝📊📎])\s+(.+?)\]\s*（(.+?)）/
 
-// Lightweight Markdown renderer — handles common patterns without external deps
-function MarkdownContent({ text }: { text: string }) {
-  const html = useMemo(() => {
-    // Escape HTML special chars first (but preserve intentional markdown)
-    let h = (text || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-    // Code blocks (```...```)
-    h = h.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
-    // Inline code
-    h = h.replace(/`([^`]+)`/g, '<code>$1</code>')
-    // Bold (**text**)
-    h = h.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-    // Italic (*text*)
-    h = h.replace(/\*([^*]+)\*/g, '<em>$1</em>')
-    // Line breaks: double newline → paragraph
-    const paragraphs = h.split(/\n\n+/)
-    h = paragraphs.map(p => {
-      p = p.trim()
-      if (!p) return ''
-      // Unordered list items
-      if (p.startsWith('- ') || p.startsWith('* ')) {
-        const items = p.split(/\n/).map(line => {
-          const li = line.replace(/^[-*]\s+/, '').trim()
-          return li ? `<li>${li}</li>` : ''
-        }).filter(Boolean).join('')
-        return `<ul>${items}</ul>`
-      }
-      // Single newline within paragraph → <br>
-      p = p.replace(/\n(?!\n)/g, '<br>')
-      return `<p>${p}</p>`
-    }).filter(Boolean).join('')
-    return h
-  }, [text])
+// ── Code Block Toolbar ──
+interface CodeBlockToolbarProps {
+  code: string
+  language: string
+  currentProjectPath?: string | null
+}
 
+function CodeBlockToolbar({ code, language, currentProjectPath }: CodeBlockToolbarProps) {
+  const [copied, setCopied] = useState(false)
+  const [saving, setSaving] = useState(false)
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleSaveFile = async () => {
+    if (!currentProjectPath) return
+    // Infer extension from language, default .txt
+    const extMap: Record<string, string> = {
+      python: '.py', javascript: '.js', typescript: '.ts', jsx: '.jsx', tsx: '.tsx',
+      html: '.html', css: '.css', json: '.json', markdown: '.md', md: '.md',
+      yaml: '.yml', toml: '.toml', ini: '.ini', sql: '.sql', bash: '.sh', sh: '.sh',
+      shell: '.sh', powershell: '.ps1', rust: '.rs', go: '.go', java: '.java',
+      c: '.c', 'c++': '.cpp', 'c#': '.cs', ruby: '.rb', php: '.php',
+      xml: '.xml', csv: '.csv', txt: '.txt',
+    }
+    const ext = extMap[language] || '.txt'
+    // Generate a unique filename
+    const timestamp = Date.now().toString(36)
+    const filename = `code_${timestamp}${ext}`
+
+    setSaving(true)
+    try {
+      await filesApi.createFile(filename, code, currentProjectPath)
+      setSaving(false)
+    } catch {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="flex items-center justify-between px-4 py-1.5 bg-[#0d0d1a] border-b border-[#2a2a4a] rounded-t-lg">
+      <span className="text-[10px] text-gray-500 uppercase">{language}</span>
+      <div className="flex items-center gap-1">
+        {currentProjectPath && (
+          <button
+            onClick={handleSaveFile}
+            disabled={saving}
+            className="flex items-center gap-1 px-2 py-0.5 text-[10px] text-gray-400 hover:text-white bg-[#1e1e3a] hover:bg-[#2a2a4a] rounded transition-colors disabled:opacity-50"
+            title="保存到项目文件夹"
+          >
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+              <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+            {saving ? '保存中...' : '保存为文件'}
+          </button>
+        )}
+        <button
+          onClick={handleCopy}
+          className="flex items-center gap-1 px-2 py-0.5 text-[10px] text-gray-400 hover:text-white bg-[#1e1e3a] hover:bg-[#2a2a4a] rounded transition-colors"
+          title="复制代码"
+        >
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+            <rect x="9" y="9" width="13" height="13" rx="2" />
+            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+          </svg>
+          {copied ? '已复制' : '复制'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ── Parse message content into segments: text | code block ──
+interface CodeSegment {
+  type: 'code'
+  language: string
+  code: string
+}
+
+interface TextSegment {
+  type: 'text'
+  html: string
+}
+
+type Segment = TextSegment | CodeSegment
+
+function parseSegments(text: string): Segment[] {
+  const segments: Segment[] = []
+  const codeBlockRe = /```(\w*)\n([\s\S]*?)```/g
+  let lastIndex = 0
+  let match: RegExpExecArray | null
+
+  while ((match = codeBlockRe.exec(text)) !== null) {
+    // Text before this code block
+    if (match.index > lastIndex) {
+      const before = text.slice(lastIndex, match.index)
+      segments.push({ type: 'text', html: renderMarkdownToHtml(before) })
+    }
+    // Code block
+    segments.push({
+      type: 'code',
+      language: match[1] || 'txt',
+      code: match[2],
+    })
+    lastIndex = match.index + match[0].length
+  }
+
+  // Remaining text
+  if (lastIndex < text.length) {
+    segments.push({ type: 'text', html: renderMarkdownToHtml(text.slice(lastIndex)) })
+  }
+
+  return segments
+}
+
+// ── Render markdown text to HTML (same logic as before, extracted) ──
+function renderMarkdownToHtml(text: string): string {
+  let h = (text || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+  // Inline code (must be before other inline formatting)
+  h = h.replace(/`([^`]+)`/g, '<code>$1</code>')
+  // Bold
+  h = h.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+  // Italic
+  h = h.replace(/\*([^*]+)\*/g, '<em>$1</em>')
+  // Line breaks → paragraphs
+  const paragraphs = h.split(/\n\n+/)
+  h = paragraphs.map(p => {
+    p = p.trim()
+    if (!p) return ''
+    if (p.startsWith('- ') || p.startsWith('* ')) {
+      const items = p.split(/\n/).map(line => {
+        const li = line.replace(/^[-*]\s+/, '').trim()
+        return li ? `<li>${li}</li>` : ''
+      }).filter(Boolean).join('')
+      return `<ul>${items}</ul>`
+    }
+    p = p.replace(/\n(?!\n)/g, '<br>')
+    return `<p>${p}</p>`
+  }).filter(Boolean).join('')
+  return h
+}
+
+// ── Markdown content renderer (text-only segments) ──
+function MarkdownSegment({ html }: { html: string }) {
   return <span dangerouslySetInnerHTML={{ __html: html }} />
 }
 
+// ── Tool call bubble ──
 function ToolCallBubble({ content }: { content: string }) {
   return (
     <div className="flex justify-start pl-4">
@@ -68,6 +189,7 @@ function ToolCallBubble({ content }: { content: string }) {
   )
 }
 
+// ── File reference badge ──
 function FileRefBadge({ match }: { match: RegExpMatchArray }) {
   return (
     <div className="flex items-center gap-1.5 text-xs mb-2 px-2.5 py-1.5 rounded-lg bg-black/10 border border-white/10">
@@ -78,12 +200,18 @@ function FileRefBadge({ match }: { match: RegExpMatchArray }) {
   )
 }
 
-export function MessageBubble({ message, isStreaming, onEdit, onBranch }: MessageBubbleProps) {
+// ── Main MessageBubble ──
+export function MessageBubble({ message, isStreaming, onEdit, onBranch, currentProjectPath }: MessageBubbleProps) {
   const [editing, setEditing] = useState(false)
   const [editText, setEditText] = useState('')
   const isUser = message.role === 'user'
   const isTool = message.role === 'tool'
   const hasImages = isUser && message.images && message.images.length > 0
+
+  const segments = useMemo(
+    () => !isUser && !isTool ? parseSegments(message.content) : [],
+    [isUser, isTool, message.content]
+  )
 
   if (isTool) {
     return <ToolCallBubble content={message.content} />
@@ -168,8 +296,40 @@ export function MessageBubble({ message, isStreaming, onEdit, onBranch }: Messag
           <div className="text-sm leading-relaxed break-words">
             {isUser ? (
               <span className="whitespace-pre-wrap">{message.content}</span>
+            ) : segments.length > 0 ? (
+              <div className="space-y-3">
+                {segments.map((seg, i) =>
+                  seg.type === 'code' ? (
+                    <div key={i} className="my-1.5 rounded-lg overflow-hidden border border-[#2a2a4a]">
+                      <CodeBlockToolbar
+                        code={seg.code}
+                        language={seg.language}
+                        currentProjectPath={currentProjectPath}
+                      />
+                      <SyntaxHighlighter
+                        language={seg.language || 'text'}
+                        style={oneDark}
+                        customStyle={{
+                          margin: 0,
+                          padding: '12px 16px',
+                          fontSize: '12px',
+                          lineHeight: '1.6',
+                          background: '#0d0d1a',
+                          borderRadius: 0,
+                        }}
+                        codeTagProps={{ style: { fontFamily: 'inherit' } }}
+                        showLineNumbers={seg.code.split('\n').length > 5}
+                      >
+                        {seg.code}
+                      </SyntaxHighlighter>
+                    </div>
+                  ) : (
+                    <MarkdownSegment key={i} html={seg.html} />
+                  )
+                )}
+              </div>
             ) : (
-              <MarkdownContent text={message.content} />
+              <MarkdownSegment html={renderMarkdownToHtml(message.content)} />
             )}
             {isStreaming && <span className="inline-block w-0.5 h-4 bg-[#4fc3f7] ml-0.5 animate-pulse align-text-bottom" />}
           </div>
@@ -179,7 +339,6 @@ export function MessageBubble({ message, isStreaming, onEdit, onBranch }: Messag
       {/* Action buttons — visible on hover when not streaming */}
       {!isStreaming && !editing && (
         <div className={`flex items-start gap-1 pt-2 px-1 opacity-0 group-hover:opacity-100 transition-opacity ${isUser ? 'order-first' : ''}`}>
-          {/* Edit button — user messages only, hide if has images */}
           {isUser && !hasImages && onEdit && (
             <button
               onClick={handleStartEdit}
@@ -191,7 +350,6 @@ export function MessageBubble({ message, isStreaming, onEdit, onBranch }: Messag
               </svg>
             </button>
           )}
-          {/* Branch button — all messages */}
           {onBranch && (
             <button
               onClick={() => onBranch(message.id)}

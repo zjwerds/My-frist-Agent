@@ -11,9 +11,10 @@ interface ChatViewProps {
   onNewConversation?: () => Promise<import('../../types').Conversation>
   temperature: number
   onSwitchConversation?: (conv: import('../../types').Conversation & { messages: import('../../types').Message[] }) => void
+  currentProjectPath?: string | null
 }
 
-export function ChatView({ conversationId, onMessageComplete, onUsage, onNewConversation, temperature, onSwitchConversation }: ChatViewProps) {
+export function ChatView({ conversationId, onMessageComplete, onUsage, onNewConversation, temperature, onSwitchConversation, currentProjectPath }: ChatViewProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [streamingContent, setStreamingContent] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -303,6 +304,7 @@ export function ChatView({ conversationId, onMessageComplete, onUsage, onNewConv
           toolStatus={toolStatus}
           onEdit={handleEdit}
           onBranch={handleBranch}
+          currentProjectPath={currentProjectPath}
         />
       </div>
 
