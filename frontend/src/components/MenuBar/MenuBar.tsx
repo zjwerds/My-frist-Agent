@@ -162,7 +162,6 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
                   ? 'bg-[#1e1e3a] text-white'
                   : 'text-gray-400 hover:bg-[#1a1a30] hover:text-gray-200'
               }`}
-              style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag' } as any}
               onClick={() => toggleMenu(id)}
             >
               {menu.label}
