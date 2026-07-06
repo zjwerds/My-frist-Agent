@@ -5,7 +5,7 @@
   "type": "module",
   "main": "electron/main.cjs",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently -n backend,frontend \"python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload --app-dir ../backend\" \"vite\"",
     "dev:electron": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
     "dev:server": "concurrently \"python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload --app-dir ../backend\" \"vite\"",
     "build": "tsc -b && vite build",
