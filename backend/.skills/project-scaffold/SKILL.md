@@ -1,7 +1,7 @@
 ---
 name: 项目脚手架
 description: 系统化项目搭建流程：需求分析 → 目录设计 → 逐文件创建 → 依赖安装 → Git初始化 → 启动验证
-category: 选蛋
+category: ""
 enabled: false
 builtin: true
 ---

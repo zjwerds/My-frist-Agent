@@ -1,7 +1,7 @@
 ---
 name: 调试流程
 description: 系统性调试方法：复现→隔离→定位→修复→验证，减少猜测式调试
-category: 选蛋
+category: ""
 enabled: false
 builtin: true
 ---

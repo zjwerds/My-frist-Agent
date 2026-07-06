@@ -14,17 +14,47 @@ async def _web_search(args: dict) -> dict:
     if not query:
         return {"error": "缺少搜索关键词"}
 
+    # Strategy 1: Bing direct search (works in China, no API key needed)
+    try:
+        url = "https://cn.bing.com/search?q=" + urllib.parse.quote(query) + "&count=" + str(max_results)
+        req = urllib.request.Request(url, headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+        })
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            html = resp.read().decode("utf-8", errors="replace")
+
+        results = []
+        for algo in re.findall(r'<li[^>]*class="b_algo[^"]*"[^>]*>(.*?)</li>', html, re.DOTALL):
+            title_match = re.search(r'<a[^>]*href="(https?://[^"]+)"[^>]*>(.*?)</a>', algo, re.DOTALL)
+            if not title_match:
+                continue
+            title = re.sub(r"<[^>]+>", "", title_match.group(2)).strip()
+            link = title_match.group(1)
+            snippet_match = re.search(r"<p>(.*?)</p>", algo, re.DOTALL)
+            snippet = re.sub(r"<[^>]+>", "", snippet_match.group(1)).strip() if snippet_match else ""
+            results.append({"title": title, "url": link, "snippet": snippet})
+            if len(results) >= max_results:
+                break
+
+        if results:
+            return {"query": query, "results": results, "total": len(results)}
+    except Exception:
+        pass  # fall through to duckduckgo_search
+
+    # Strategy 2: duckduckgo_search (works outside China)
     try:
         from duckduckgo_search import DDGS
         results = []
         with DDGS() as ddgs:
             for r in ddgs.text(query, max_results=max_results):
                 results.append({"title": r.get("title", ""), "url": r.get("href", ""), "snippet": r.get("body", "")})
-        return {"query": query, "results": results, "total": len(results)}
-    except ImportError:
-        return {"error": "DuckDuckGo 搜索不可用（未安装 duckduckgo-search 包）"}
-    except Exception as e:
-        return {"query": query, "error": str(e), "results": []}
+        if results:
+            return {"query": query, "results": results, "total": len(results)}
+    except Exception:
+        pass
+
+    return {"query": query, "error": "搜索不可用", "results": []}
 
 
 async def _web_fetch(args: dict) -> dict:

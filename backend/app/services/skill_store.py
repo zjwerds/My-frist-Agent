@@ -931,62 +931,32 @@ _SEED_FUNCTION_SKILLS: list[dict] = [
 # ── Auto-categorization keyword map ────────────────────────────────────
 
 CATEGORY_KEYWORDS = {
-    "论文写作": [
-        "论文", "paper", "thesis", "学术", "research", "引用", "citation",
-        "参考文献", "期刊", "journal", "publication", "写作", "writing",
-        "综述", "literature", "methodology", "方法论", "查重", "剽窃",
-        "plagiarism", "参考文献管理", "zotero", "endnote", "latex",
-    ],
-    "前端开发": [
-        "react", "vue", "angular", "css", "html", "javascript", "typescript",
-        "前端", "web", "ui", "ux", "frontend", "tailwind", "组件", "component",
-        "svelte", "next.js", "nuxt", "vite", "webpack", "babel", "eslint",
-        "页面", "界面", "布局", "响应式", "responsive", "dom",
-    ],
-    "后端开发": [
-        "api", "backend", "server", "database", "sql", "nosql",
-        "fastapi", "django", "flask", "spring", "rust", "go", "golang",
-        "graphql", "rest", "微服务", "microservice", "中间件", "middleware",
-        "redis", "mongodb", "postgresql", "mysql", "orm", "alembic",
-    ],
-    "测试开发": [
-        "test", "testing", "pytest", "jest", "unittest", "测试",
-        "tdd", "ci/cd", "mock", "assertion", "coverage", "覆盖率",
-        "e2e", "integration", "单元测试", "集成测试", "端到端",
-        "vitest", "mocha", "chai", "selenium", "playwright", "cypress",
-    ],
-    "DevOps / 部署": [
-        "docker", "kubernetes", "k8s", "deploy", "ci", "cd", "jenkins",
-        "github actions", "devops", "nginx", "反向代理", "proxy",
-        "容器化", "container", "orchestration", "terraform",
-        "ansible", "helm", "监控", "monitoring", "grafana", "prometheus",
-    ],
-    "数据分析": [
-        "data", "analysis", "pandas", "numpy", "可视化", "chart",
-        "报表", "数据", "analytics", "matplotlib", "统计", "statistics",
-        "machine learning", "深度学习", "deep learning", "neural", "训练",
-        "train", "pytorch", "tensorflow", "数据挖掘", "data mining",
-        "jupyter", "notebook", "特征工程", "feature",
-    ],
-    "项目管理": [
-        "project", "管理", "management", "agile", "scrum", "jira",
-        "需求", "requirement", "规划", "planning", "roadmap",
-        "迭代", "sprint", "看板", "kanban", "团队", "team",
-    ],
-    "提示词工程": [
-        "prompt", "提示词", "prompt engineering", "指令",
-        "chain-of-thought", "cot", "few-shot", "in-context",
-        "角色扮演", "persona", "模板", "template",
-    ],
-    "数据库": [
-        "sql", "database", "数据库", "mysql", "postgresql", "redis",
-        "mongodb", "sqlite", "oracle", "查询", "query", "index",
-        "索引", "迁移", "migration", "schema", "表", "table",
+    # ── 三类自定义分类（保留固定映射，不受自动匹配影响）──
+    "查蛋神器": ["find-skills", "查找技能", "skills.sh"],
+    "捏蛋神器": ["nvwa", "女娲", "人物skill", "人物框架"],
+    "选蛋": ["视角", "perspective", "persona", "人物思维"],
+    # ── 简化的通用分类 ──
+    "编程": [
+        "code", "coding", "编程", "开发", "前端", "react", "vue", "后端",
+        "api", "server", "database", "test", "测试", "debug", "调试",
+        "deploy", "docker", "git", "脚手架", "scaffold", "项目",
+        "python", "javascript", "typescript", "node", "npm",
+        "vite", "webpack", "ci/cd", "迁移", "shell", "command",
+        "依赖", "构建", "build", "config", "配置", "部署",
     ],
     "AI / 大模型": [
         "llm", "gpt", "claude", "deepseek", "大模型", "ai", "人工智能",
         "openai", "langchain", "rag", "agent", "embedding", "token",
-        "微调", "fine-tune", "qwen", "glm", "yi",
+        "微调", "fine-tune", "prompt", "提示词",
+    ],
+    "写作 / 翻译": [
+        "论文", "writing", "写作", "翻译", "translate", "translator",
+        "摘要", "总结", "报告", "document", "文案",
+    ],
+    "实用工具": [
+        "工具", "utility", "格式", "format", "json", "regex", "正则",
+        "ocr", "识别", "图片", "监控", "watch", "环境变量",
+        "schedule", "定时", "任务",
     ],
 }
 
@@ -994,11 +964,14 @@ CATEGORY_KEYWORDS = {
 def _auto_categorize_keywords(skill: dict) -> bool:
     """Match skill name/description/content against keyword map.
 
-    Only acts on skills whose category is empty or the default "实用工具".
+    Re-categorizes any skill whose current category is not in the keyword map
+    (i.e. skills.sh categories like "选蛋" that don't exist in our system).
+    Skips skills that already have a standard category assigned.
     Returns True if a category was assigned, False otherwise.
     """
     current = skill.get("category", "") or ""
-    if current and current != "实用工具":
+    # Already has a standard category → skip
+    if current in CATEGORY_KEYWORDS:
         return False
 
     text = " ".join([

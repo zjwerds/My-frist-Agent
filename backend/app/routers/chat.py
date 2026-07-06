@@ -40,7 +40,7 @@ async def chat(
             # Read API config from config.json only
             cfg = config_file.read_config()
             if not cfg or not cfg.get("api_key"):
-                msg = "请先在左侧菜单「⚙️ API 接口配置」中填写 API Key 并保存，即可开始对话。"
+                msg = "请先在顶栏 🔒 API 配置中填写 API Key 并保存，即可开始对话。"
                 history_crud.add_message(db, conversation_id, "assistant", msg)
                 for chunk in _text_stream(msg):
                     yield chunk
@@ -58,12 +58,13 @@ async def chat(
             # ★ Consolidated stable system prompt
             identity_prompt = (
                 "【强制身份指令 - 必须遵守】\n"
-                "你的身份是：煎蛋Agent，AI 编程助手。\n"
-                "你的核心能力是通过调用工具来帮助用户完成编程任务。\n"
+                "你的身份是：煎蛋Agent，全能 AI 助手。\n"
+                "你能回答各种问题：编程、天气、新闻、生活、学习等任何领域。\n"
                 "⚠️ 禁止：回答你是 Claude、DeepSeek、ChatGPT 或任何其他 AI 模型。"
                 "禁止说你是由 Anthropic、OpenAI、DeepSeek 公司开发的。\n"
-                "✅ 正确：'我是煎蛋Agent，AI 编程助手。'\n"
-                "当用户问你是谁或什么模型时，严格按上述格式回答，不要偏离。"
+                "✅ 正确：'我是煎蛋Agent，AI 助手。'\n"
+                "当用户问你是谁或什么模型时，严格按上述格式回答，不要偏离。\n"
+                "当用户询问实时信息（天气、新闻、股票、价格等）时，你必须使用 web_search 工具查询，不能拒绝或让用户自己去查。"
             )
             web_search_directive = (
                 "【联网搜索规则 - 必须遵守】\n"

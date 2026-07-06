@@ -11,15 +11,12 @@ interface MenuItem {
   divider?: boolean
 }
 
-type MenuId = 'file' | 'edit' | 'selection' | 'view' | 'run' | 'help'
+type MenuId = 'file' | 'edit' | 'view' | 'help'
 
 interface TitleBarProps {
   theme: string
   onThemeChange: (theme: string) => void
   onNewConversation?: (conv?: Conversation) => void
-  onSelectApi?: () => void
-  onOpenFile?: () => void
-  hasApiKey?: boolean
   onApiConfigSaved?: () => void
   // Conversation popover props
   activeConversationId?: string | null
@@ -34,13 +31,11 @@ interface TitleBarProps {
   // Temperature
   temperature?: number
   onTemperatureChange?: (value: number) => void
-  // Backend health
-  backendOk?: boolean
 }
 
 const electronAPI = (window as unknown as { electronAPI?: { minimize?: () => void; maximize?: () => void; close?: () => void; isMaximized?: () => Promise<boolean>; onMaximizeChange?: (cb: (maximized: boolean) => void) => () => void } }).electronAPI
 
-export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, onApiConfigSaved, activeConversationId, currentProjectPath, onSelectConversation, onDeleteConversation, refreshKey, onBgUpload, onBgRemove, hasBg, temperature, onTemperatureChange }: TitleBarProps) {
+export function MenuBar({ theme, onThemeChange, onNewConversation, onApiConfigSaved, activeConversationId, currentProjectPath, onSelectConversation, onDeleteConversation, refreshKey, onBgUpload, onBgRemove, hasBg, temperature, onTemperatureChange }: TitleBarProps) {
   const [openMenu, setOpenMenu] = useState<MenuId | null>(null)
   const [isMaximized, setIsMaximized] = useState(false)
   const barRef = useRef<HTMLDivElement>(null)
@@ -84,9 +79,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
     file: {
       label: '文件',
       items: [
-        { label: '打开文件...', action: () => { onOpenFile?.(); closeMenu() } },
-        { label: '保存', action: () => closeMenu() },
-        { label: '另存为', action: () => closeMenu() },
+        { label: '新对话', action: () => { onNewConversation?.(); closeMenu() } },
         { label: '', divider: true },
         { label: '退出', action: () => electronAPI?.close?.() },
       ],
@@ -96,19 +89,6 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
       items: [
         { label: '撤销', action: () => closeMenu() },
         { label: '重做', action: () => closeMenu() },
-        { label: '', divider: true },
-        { label: '剪切', action: () => closeMenu() },
-        { label: '复制', action: () => closeMenu() },
-        { label: '粘贴', action: () => closeMenu() },
-      ],
-    },
-    selection: {
-      label: '选择',
-      items: [
-        { label: '全选', action: () => closeMenu() },
-        { label: '', divider: true },
-        { label: '查找', action: () => closeMenu() },
-        { label: '替换', action: () => closeMenu() },
       ],
     },
     view: {
@@ -118,20 +98,12 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
         { label: '', divider: true },
         { label: '放大', action: () => closeMenu() },
         { label: '缩小', action: () => closeMenu() },
-        { label: '重置缩放', action: () => closeMenu() },
-      ],
-    },
-    run: {
-      label: '运行',
-      items: [
-        { label: '运行任务', action: () => closeMenu() },
-        { label: '停止任务', action: () => closeMenu() },
       ],
     },
     help: {
       label: '帮助',
       items: [
-        { label: '关于 煎蛋Agent', action: () => { alert('煎蛋Agent v1.0\n一个基于 AI 的智能助手平台。'); closeMenu() } },
+        { label: '关于 煎蛋Agent', action: () => { alert('煎蛋Agent v1.0.1\n基于 DeepSeek V4 Flash 的 AI 编程助手。'); closeMenu() } },
       ],
     },
   }
@@ -208,10 +180,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onOpenFile, o
           value={temperature ?? 0.5}
           onChange={(e) => onTemperatureChange?.(parseFloat(e.target.value))}
           className="w-28 h-1.5 cursor-pointer rounded-full appearance-none temp-slider"
-          style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag' } as any}
-          style={{
-            background: `linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899, #ef4444)`,
-          }}
+          style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag', background: `linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899, #ef4444)` } as any}
           title={`温度: ${(temperature ?? 0.5).toFixed(2)}`}
         />
         <span className="text-xs font-mono text-gray-300 w-8 text-right shrink-0">

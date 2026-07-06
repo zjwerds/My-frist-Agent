@@ -19,6 +19,15 @@ export function ApiConfigPopover({ onSaved }: ApiConfigPopoverProps) {
   const [testing, setTesting] = useState(false)
   const [testResult, setTestResult] = useState<{ success: boolean; latency_ms?: number } | null>(null)
 
+  // On mount: check backend for existing API config (so status dot is correct on restart)
+  useEffect(() => {
+    apisApi.list().then((configs: ApiConfig[]) => {
+      if (configs.length > 0) {
+        setConfigured(configs[0].api_key.length > 0)
+      }
+    }).catch(() => {})
+  }, [])
+
   // Close on outside click
   useEffect(() => {
     if (!open) return
@@ -162,6 +171,7 @@ export function ApiConfigPopover({ onSaved }: ApiConfigPopoverProps) {
                 type="text"
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleSave() }}
                 className="w-full bg-[#0d0d1a] border border-[#2a2a4a] rounded px-2 py-1.5 text-xs text-gray-200 outline-none focus:border-[#4a4a7a]"
               />
             </div>

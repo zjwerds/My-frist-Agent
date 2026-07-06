@@ -4,7 +4,7 @@ import { Sidebar } from './components/Sidebar/Sidebar'
 import { RightPanel } from './components/RightPanel/RightPanel'
 import { FileViewer } from './components/RightPanel/FileViewer'
 import { MenuBar } from './components/MenuBar/MenuBar'
-import { apisApi, historyApi, filesApi, checkBackendHealth } from './api/client'
+import { historyApi, filesApi, checkBackendHealth } from './api/client'
 
 const STORAGE_THEME = 'color-theme'
 const STORAGE_BG = 'bg-image'
@@ -18,7 +18,6 @@ export default function App() {
   const [activeFilePath, setActiveFilePath] = useState<string | null>(null)
   const [theme, setTheme] = useState('warm')
   const [bgImage, setBgImage] = useState<string | null>(null)
-  const [hasApiKey, setHasApiKey] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const [temperature, setTemperature] = useState(0.5)
   const [backendOk, setBackendOk] = useState(false)
@@ -51,13 +50,6 @@ export default function App() {
       })
     }
   }, [])
-
-  // Check API config status on mount and after config changes
-  useEffect(() => {
-    apisApi.list().then((configs) => {
-      setHasApiKey(configs.length > 0 && configs[0].api_key.length > 0)
-    }).catch(() => setHasApiKey(false))
-  }, [refreshKey])
 
   // Backend health check — fast poll during startup, slow poll after
   useEffect(() => {
@@ -134,7 +126,6 @@ export default function App() {
   const handleUsage = (_usage: { prompt_tokens: number; completion_tokens: number; cache_hit_tokens: number }) => {
     // usage logged server-side; no-op in production
   }
-  const handleSelectApi = () => setRightView('api-config')
   const handleBackToChat = () => setRightView('chat')
   const handleOpenFile = (path: string) => {
     setActiveFilePath(path)
@@ -237,10 +228,7 @@ export default function App() {
           }
           setRightView('chat')
         }}
-        onSelectApi={handleSelectApi}
         onApiConfigSaved={handleMessageComplete}
-        onOpenFile={() => handleOpenFile('')}
-        hasApiKey={hasApiKey}
         activeConversationId={activeConversationId}
         onSelectConversation={handleSelectConversation}
         onDeleteConversation={handleDeleteConversation}
