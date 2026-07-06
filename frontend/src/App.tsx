@@ -68,7 +68,21 @@ export default function App() {
     check()
     const interval = backendStarting ? 1000 : 15000
     const id = setInterval(check, interval)
-    return () => clearInterval(id)
+
+    // Also listen for push health events from Electron main process
+    const electronAPI = (window as unknown as { electronAPI?: { onBackendHealth?: (cb: (ok: boolean) => void) => () => void } }).electronAPI
+    let unsub: (() => void) | undefined
+    if (electronAPI?.onBackendHealth) {
+      unsub = electronAPI.onBackendHealth((ok: boolean) => {
+        setBackendOk(ok)
+        if (ok) setBackendStarting(false)
+      })
+    }
+
+    return () => {
+      clearInterval(id)
+      if (unsub) unsub()
+    }
   }, [backendStarting])
 
   // Startup timeout — show error after 30s of waiting

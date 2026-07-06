@@ -22,4 +22,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   // File dialog
   openDirectory: () => ipcRenderer.invoke('open-directory'),
+  // Backend health
+  getBackendHealth: () => ipcRenderer.invoke('get-backend-health'),
+  onBackendHealth: (callback) => {
+    const handler = (_event, ok) => callback(ok)
+    ipcRenderer.on('backend-health', handler)
+    return () => ipcRenderer.removeListener('backend-health', handler)
+  },
 })

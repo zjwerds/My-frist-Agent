@@ -7,8 +7,11 @@ const { spawn } = require('child_process')
 const http = require('http')
 
 const PORT = 8000
+const LOCK_PORT = 8001
 const isDev = process.env.NODE_ENV === 'development'
 let pythonProcess = null
+let restartCount = 0
+const MAX_RESTARTS = 3
 
 // ── Detect Electron API ────────────────────────────────────────────────────────
 
@@ -107,6 +110,12 @@ function startPython() {
     pythonProcess.on('exit', (code) => {
       console.log(`[main] Python process exited with code ${code}`)
       pythonProcess = null
+      // Watchdog: auto-restart backend if it crashes unexpectedly
+      if (code !== 0 && restartCount < MAX_RESTARTS) {
+        restartCount++
+        console.log(`[main] Restarting backend (${restartCount}/${MAX_RESTARTS})...`)
+        setTimeout(() => startPython().then(() => waitForBackend()), 1000)
+      }
     })
 
     // Safety timeout: resolve anyway after 8 s
@@ -184,6 +193,23 @@ function runElectron(electron) {
 
   let mainWindow = null
   let floatingWindow = null
+  let lockServer = null
+
+  // ── Port-based single-instance lock ──────────────────────────────────
+  // Catches duplicate instances from different paths where Electron's
+  // requestSingleInstanceLock doesn't apply.
+  function acquirePortLock() {
+    return new Promise((resolve) => {
+      lockServer = require('net').createServer()
+      lockServer.on('error', () => {
+        // Port 8001 in use → another instance already running
+        resolve(false)
+      })
+      lockServer.listen(LOCK_PORT, '127.0.0.1', () => {
+        resolve(true)
+      })
+    })
+  }
 
   function createWindow() {
     mainWindow = new BrowserWindow({
@@ -310,6 +336,34 @@ function runElectron(electron) {
   ipcMain.on('window-close', () => mainWindow?.close())
   ipcMain.handle('window-is-maximized', () => mainWindow?.isMaximized())
 
+  // ── Backend health IPC ───────────────────────────────────────────────
+
+  let healthInterval = null
+
+  function startHealthProbe() {
+    // Periodically check backend and notify renderer
+    healthInterval = setInterval(() => {
+      const req = http.get(`http://127.0.0.1:${PORT}/api/health`, (res) => {
+        const ok = res.statusCode === 200
+        try { mainWindow?.webContents?.send('backend-health', ok) } catch (_) {}
+      })
+      req.on('error', () => {
+        try { mainWindow?.webContents?.send('backend-health', false) } catch (_) {}
+      })
+      req.setTimeout(3000, () => { req.destroy(); try { mainWindow?.webContents?.send('backend-health', false) } catch (_) {} })
+    }, 10000)
+  }
+
+  ipcMain.handle('get-backend-health', async () => {
+    return new Promise((resolve) => {
+      const req = http.get(`http://127.0.0.1:${PORT}/api/health`, (res) => {
+        resolve(res.statusCode === 200)
+      })
+      req.on('error', () => resolve(false))
+      req.setTimeout(3000, () => { req.destroy(); resolve(false) })
+    })
+  })
+
   // ── File dialog ───────────────────────────────────────────────────────
 
   ipcMain.handle('open-directory', async () => {
@@ -327,25 +381,39 @@ function runElectron(electron) {
   // ── App lifecycle ──────────────────────────────────────────────────────────
 
   app.whenReady().then(async () => {
+    // Port-based single-instance lock — catches duplicates from different paths
+    const isPrimary = await acquirePortLock()
+    if (!isPrimary) {
+      dialog.showErrorBox('重复启动', '煎蛋Agent 已在运行中。\n请检查系统托盘或任务栏。')
+      app.quit()
+      return
+    }
+
     // Show loading window immediately — user sees a loading screen instead of black screen
     createWindow()
 
     try {
       await startPython()
       await waitForBackend()
-      // Frontend detects backend ready via its own /api/health polling
+      startHealthProbe()
     } catch (err) {
       console.error('[main] Backend startup failed:', err)
-      // Retry once
-      console.log('[main] Retrying backend startup...')
-      try {
-        await startPython()
-        await waitForBackend()
-      } catch (err2) {
-        console.error('[main] Backend retry also failed:', err2)
-        dialog.showErrorBox('启动失败', `无法启动后端服务:\n${err2.message}\n\n请尝试重新安装程序。`)
-        app.quit()
-      }
+      // Watchdog in startPython handles auto-restart; if exe is blocked by
+      // antivirus, all MAX_RESTARTS attempts will fail and we notify the user.
+      setTimeout(async () => {
+        const ok = await new Promise((resolve) => {
+          const req = http.get(`http://127.0.0.1:${PORT}/api/health`, (res) => resolve(res.statusCode === 200))
+          req.on('error', () => resolve(false))
+          req.setTimeout(3000, () => { req.destroy(); resolve(false) })
+        })
+        if (!ok) {
+          dialog.showErrorBox('后端启动失败', '无法启动后端服务，可能原因：\n\n' +
+            '1. 被杀毒软件拦截 — 请将程序加入白名单\n' +
+            '2. 端口 8000 被占用 — 请关闭其他占用端口的程序\n' +
+            '3. 系统环境不兼容\n\n' +
+            '点击确定后应用会继续运行，后端将在后台持续尝试重启。')
+        }
+      }, 15000)
     }
 
     app.on('activate', () => {
