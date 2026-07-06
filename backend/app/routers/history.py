@@ -1,3 +1,4 @@
+import re
 from fastapi import APIRouter, Depends, Query, Body, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
@@ -5,6 +6,15 @@ from app.crud import history as crud
 from app.crud.history import get_messages
 
 router = APIRouter(prefix="/api/history")
+
+ANALYSIS_PREFIX_RE = re.compile(r'^【前置分析】\n.*?\n---\n', re.DOTALL)
+
+
+def _strip_analysis(content: str | None) -> str | None:
+    """Remove the 【前置分析】...--- prefix added by assess_user_intent."""
+    if content and content.startswith('【前置分析】'):
+        return ANALYSIS_PREFIX_RE.sub('', content, count=1)
+    return content
 
 
 @router.get("")
@@ -40,7 +50,7 @@ def get_conversation(conv_id: str, db: Session = Depends(get_db)):
             {
                 "id": m.id,
                 "role": m.role,
-                "content": m.content,
+                "content": _strip_analysis(m.content) if m.role in ('user',) else m.content,
                 "tool_calls": m.tool_calls,
                 "created_at": m.created_at.isoformat() if m.created_at else "",
             }
@@ -116,7 +126,7 @@ def branch_conversation(conv_id: str, from_msg_id: str = Query(...), db: Session
             {
                 "id": m.id,
                 "role": m.role,
-                "content": m.content,
+                "content": _strip_analysis(m.content) if m.role in ('user',) else m.content,
                 "tool_calls": m.tool_calls,
                 "created_at": m.created_at.isoformat() if m.created_at else "",
             }
