@@ -1384,6 +1384,7 @@ def get_enabled_tools() -> list[dict]:
         if s.get("enabled") and s.get("tool_definition"):
             td = s["tool_definition"]
             tools.append(td)
+    tools.sort(key=lambda t: t.get("function", {}).get("name", ""))
     _tool_cache = tools
     return tools
 
