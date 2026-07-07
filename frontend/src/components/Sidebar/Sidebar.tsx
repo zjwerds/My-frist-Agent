@@ -79,7 +79,7 @@ export function Sidebar({
 
   return (
     <div className="flex shrink-0 h-full" style={{ width }}>
-      <div className="flex-1 flex flex-col h-full min-w-0 bg-[#16162a]/85 border-r border-[#2a2a4a]">
+      <div className="flex-1 flex flex-col h-full min-w-0 glass border-r border-white/40">
         {/* Main content - Project Explorer fills available space */}
         <div className="flex-1 overflow-y-auto p-2">
           <ProjectExplorer
@@ -91,7 +91,7 @@ export function Sidebar({
         </div>
 
         {/* Stats at the bottom */}
-        <div className="border-t border-[#2a2a4a]">
+        <div className="border-t border-white/10">
           <StatsSection />
         </div>
       </div>

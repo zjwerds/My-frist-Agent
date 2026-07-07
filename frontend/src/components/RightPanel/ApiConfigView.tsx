@@ -155,7 +155,7 @@ export function ApiConfigView({ onBackToChat, onSaved }: ApiConfigViewProps) {
                 value={apiKey}
                 onChange={(e) => { setApiKey(e.target.value); setKeyModified(true) }}
                 placeholder="sk-..."
-                className="w-full bg-white/5 text-gray-200 rounded-lg px-4 py-2.5 text-sm placeholder-gray-600 outline-none focus:ring-1 focus:ring-white/20 transition-all border border-white/10 focus:border-white/20"
+                className="w-full bg-white/10 backdrop-blur-[40px] text-gray-200 rounded-2xl px-4 py-2.5 text-sm placeholder-gray-600 outline-none focus:ring-1 focus:ring-white/20 transition-all border border-white/15 focus:border-white/30"
               />
               <p className="text-[10px] text-gray-600 mt-1">API Key 仅保存在本地，不会上传到其他服务器</p>
             </div>
@@ -166,7 +166,7 @@ export function ApiConfigView({ onBackToChat, onSaved }: ApiConfigViewProps) {
                 type="text"
                 value={baseUrl}
                 onChange={(e) => setBaseUrl(e.target.value)}
-                className="w-full bg-white/5 text-gray-200 rounded-lg px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-white/20 transition-all border border-white/10 focus:border-white/20"
+                className="w-full bg-white/10 backdrop-blur-[40px] text-gray-200 rounded-2xl px-4 py-2.5 text-sm outline-none focus:ring-1 focus:ring-white/20 transition-all border border-white/15 focus:border-white/30"
               />
             </div>
 
@@ -177,7 +177,7 @@ export function ApiConfigView({ onBackToChat, onSaved }: ApiConfigViewProps) {
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
                 placeholder="deepseek-v4-flash"
-                className="w-full bg-white/5 text-gray-200 rounded-lg px-4 py-2.5 text-sm placeholder-gray-600 outline-none focus:ring-1 focus:ring-white/20 transition-all border border-white/10 focus:border-white/20"
+                className="w-full bg-white/10 backdrop-blur-[40px] text-gray-200 rounded-2xl px-4 py-2.5 text-sm placeholder-gray-600 outline-none focus:ring-1 focus:ring-white/20 transition-all border border-white/15 focus:border-white/30"
               />
               <p className="text-[10px] text-gray-600 mt-1">例如 deepseek-v4-flash、deepseek-reasoner、gpt-4o</p>
             </div>
@@ -188,7 +188,7 @@ export function ApiConfigView({ onBackToChat, onSaved }: ApiConfigViewProps) {
             <button
               onClick={handleTest}
               disabled={!apiKey.trim() || testing}
-              className="px-5 py-2.5 bg-white/5 text-gray-300 rounded-lg text-sm hover:bg-white/10 disabled:opacity-40 transition-colors border border-white/10"
+              className="px-5 py-2.5 bg-white/10 backdrop-blur-[40px] text-gray-300 rounded-2xl text-sm hover:bg-white/20 disabled:opacity-40 transition-colors border border-white/15"
             >
               <div className="flex items-center gap-1.5">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
@@ -228,7 +228,7 @@ export function ApiConfigView({ onBackToChat, onSaved }: ApiConfigViewProps) {
 
           {/* Test Result */}
           {testResult && (
-            <div className={`rounded-lg px-4 py-3 text-sm backdrop-blur-sm border ${
+            <div className={`rounded-2xl px-4 py-3 text-sm backdrop-blur-[40px] border ${
               testResult.success
                 ? 'bg-green-500/10 border-green-500/20 text-green-400'
                 : 'bg-red-500/10 border-red-500/20 text-red-400'

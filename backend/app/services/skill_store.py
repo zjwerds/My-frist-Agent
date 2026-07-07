@@ -15,13 +15,6 @@ SKILL_DIR = os.path.join(get_data_dir(), ".skills")
 TOOL_DIR = os.path.join(get_data_dir(), ".tools")
 
 # ── In-memory cache ──────────────────────────────────────────────────────
-_cache_skills: list[dict] | None = None
-_tool_cache: list[dict] | None = None
-
-def _clear_cache() -> None:
-    global _cache_skills, _tool_cache
-    _cache_skills = None
-    _tool_cache = None
 
 # ── Seed data ───────────────────────────────────────────────────────────
 
@@ -89,19 +82,21 @@ For example:
 - `npx skills find design --owner vercel-labs` — Find design skills by owner
 - `npx skills find` — Interactive search
 
-### Step 4: Install and Activate
+### Step 4: Install and Register
 
-Once a skill is found, install it:
+Once a skill is found, install and register it in two steps:
 
 ```bash
 npx skills add <source> -g -y
 ```
 
-After installation, the skill will be available in the agent's skill system.
+After installation, read the downloaded skill file and write it to `.skills/`:
 
-## Note on the find_skills Tool
+1. Find the installed location: `node -e "console.log(require.resolve('<package>/package.json'))"`
+2. Read the SKILL.md: use `file_read` on the SKILL.md in the installed package
+3. Register the skill: use `file_write` to create `.skills/<name>/<name>.json` (with fields: id, name, description, category, enabled, type: "prompt")
+4. Write the content: use `file_write` to create `.skills/<name>/SKILL.md` with the content from step 2
 
-This app also has a built-in **find_skills** function tool that can directly search skills.sh. When the user asks about finding skills, you can use that tool alongside this guide.
 """,
     },
 ]
@@ -1072,9 +1067,6 @@ async def auto_categorize_ai(
             import asyncio
             await asyncio.sleep(0.5)
 
-    if reclassified > 0:
-        _clear_cache()
-
     return reclassified
 
 
@@ -1258,24 +1250,28 @@ def _migrate_skills_to_subdirs() -> None:
 def _seed_bundled_skills() -> None:
     """When frozen (PyInstaller), copy bundled .skills/ and .tools/ from
     sys._MEIPASS to get_data_dir() so they persist across runs."""
-    if not getattr(sys, 'frozen', False):
+    if not getattr(sys, 'frozen', False) or not hasattr(sys, '_MEIPASS'):
         return
+    import shutil
     meipass = sys._MEIPASS
     data_dir = get_data_dir()
 
     for subdir in ('.skills', '.tools'):
-        src = os.path.join(meipass, subdir)
-        dst = os.path.join(data_dir, subdir)
-        if not os.path.isdir(src):
-            continue
-        if os.path.isdir(dst) and os.listdir(dst):
-            continue  # already seeded
-        import shutil
-        os.makedirs(os.path.dirname(dst), exist_ok=True)
-        if os.path.isdir(dst):
-            shutil.rmtree(dst)
-        shutil.copytree(src, dst)
-        logger.info("Seeded bundled %s → %s (%d files)", subdir, dst, len(os.listdir(dst)))
+        try:
+            src = os.path.join(meipass, subdir)
+            dst = os.path.join(data_dir, subdir)
+            if not os.path.isdir(src):
+                continue
+            if os.path.isdir(dst) and os.listdir(dst):
+                continue  # already seeded
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            if os.path.isdir(dst):
+                shutil.rmtree(dst)
+            shutil.copytree(src, dst)
+            count = len(os.listdir(dst))
+            logger.info("Seeded bundled %s → %s (%d files)", subdir, dst, count)
+        except Exception as e:
+            logger.warning("Failed to seed bundled %s: %s", subdir, e)
 
 
 def init_skills() -> None:
@@ -1284,7 +1280,6 @@ def init_skills() -> None:
     _migrate_skills_to_subdirs()
     _seed_if_empty()
     _seed_function_skills()
-    _clear_cache()
 
 
 def _scan_dir(base: str, skills: list[dict]) -> None:
@@ -1304,14 +1299,10 @@ def _scan_dir(base: str, skills: list[dict]) -> None:
 
 def list_skills() -> list[dict]:
     """Return all skills (.json + .md) from .skills/ and .tools/, sorted by (category, name)."""
-    global _cache_skills
-    if _cache_skills is not None:
-        return _cache_skills
     skills = []
     _scan_dir(SKILL_DIR, skills)
     _scan_dir(TOOL_DIR, skills)
     skills.sort(key=lambda s: (s.get("category", ""), s.get("name", "")))
-    _cache_skills = skills
     return skills
 
 
@@ -1324,7 +1315,6 @@ def toggle_skill(skill_id: str, enabled: bool) -> dict | None:
         return None
     skill["enabled"] = enabled
     _write_file(path, skill)
-    _clear_cache()
     return skill
 
 
@@ -1339,18 +1329,11 @@ def remove_skill(skill_id: str) -> bool:
     if os.path.isdir(skill_dir):
         import shutil
         shutil.rmtree(skill_dir, ignore_errors=True)
-    _clear_cache()
     return True
 
 
 def get_enabled_tools() -> list[dict]:
-    """Return enabled function-type skills as tool_definition dicts for the AI.
-
-    Result is cached in _tool_cache and cleared when any skill is toggled/removed.
-    """
-    global _tool_cache
-    if _tool_cache is not None:
-        return _tool_cache
+    """Return enabled function-type skills as tool_definition dicts for the AI."""
     all_skills = list_skills()
     tools = []
     for s in all_skills:
@@ -1358,7 +1341,6 @@ def get_enabled_tools() -> list[dict]:
             td = s["tool_definition"]
             tools.append(td)
     tools.sort(key=lambda t: t.get("function", {}).get("name", ""))
-    _tool_cache = tools
     return tools
 
 

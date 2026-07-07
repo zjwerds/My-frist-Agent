@@ -1,0 +1,10 @@
+{
+  "id": "first-principles",
+  "name": "第一性原则",
+  "description": "第一性原理编程思维：从物理学基本定律推导最优方案，拒绝类比和行业惯例陷阱",
+  "category": "编程",
+  "enabled": false,
+  "builtin": true,
+  "hidden": false,
+  "type": "prompt"
+}

@@ -53,7 +53,7 @@ async def chat(
 
             # Read config
             model_name = cfg.get("model", "deepseek-v4-flash")
-            timeout_seconds = cfg.get("timeout_ms", 30000) / 1000.0
+            timeout_seconds = cfg.get("timeout_ms", 120000) / 1000.0
 
             # ★ Consolidated stable system prompt
             identity_prompt = (

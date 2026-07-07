@@ -8,8 +8,8 @@ interface SettingsPopoverProps {
   hasBg: boolean
 }
 
-const THEMES = ['warm', 'mint', 'lavender'] as const
-const THEME_LABELS: Record<string, string> = { warm: '暖白杏橙', mint: '米白抹茶', lavender: '奶油淡紫' }
+const THEMES = ['theme1', 'theme2', 'theme3'] as const
+const THEME_LABELS: Record<string, string> = { theme1: '深邃蓝黑', theme2: '极简黑白', theme3: '暗紫橙金' }
 
 export function SettingsPopover({ theme, onThemeChange, onBgUpload, onBgRemove, hasBg }: SettingsPopoverProps) {
   const [open, setOpen] = useState(false)
@@ -41,7 +41,7 @@ export function SettingsPopover({ theme, onThemeChange, onBgUpload, onBgRemove, 
       <button
         onClick={() => setOpen(!open)}
         className={`w-7 h-7 flex items-center justify-center rounded transition-colors ${
-          open ? 'bg-[#2a2a4a] text-white' : 'text-gray-400 hover:bg-[#1a1a30] hover:text-gray-200'
+          open ? 'bg-black/15 text-gray-900' : 'text-gray-500 hover:bg-black/10 hover:text-gray-700'
         }`}
         title="主题与背景"
       >
@@ -61,12 +61,7 @@ export function SettingsPopover({ theme, onThemeChange, onBgUpload, onBgRemove, 
       {/* Popover panel */}
       {open && (
         <div
-          className="absolute top-full right-0 z-50 w-[280px] mt-1 overflow-hidden"
-          style={{
-            background: '#1a1a30',
-            border: '1px solid #2a2a4a',
-            borderRadius: '8px',
-          }}
+          className="absolute top-full right-0 z-50 w-[280px] mt-1 overflow-hidden glass-sm rounded-2xl"
         >
           <div className="p-3 space-y-4">
             {/* Theme */}
@@ -78,7 +73,7 @@ export function SettingsPopover({ theme, onThemeChange, onBgUpload, onBgRemove, 
                     key={t}
                     onClick={() => onThemeChange(t)}
                     className={`flex flex-col items-center gap-1.5 px-3 py-2 rounded-lg transition-colors flex-1 ${
-                      theme === t ? 'bg-[#2a2a4a]' : 'hover:bg-[#1e1e3a]'
+                      theme === t ? 'bg-white/15' : 'hover:bg-white/10'
                     }`}
                   >
                     <div
@@ -87,7 +82,7 @@ export function SettingsPopover({ theme, onThemeChange, onBgUpload, onBgRemove, 
                       }`}
                       style={{
                         backgroundColor:
-                          t === 'warm' ? '#f59e6b' : t === 'mint' ? '#8fb396' : '#c9a0d4',
+                          t === 'theme1' ? '#3b82f6' : t === 'theme2' ? '#ff006e' : '#e94560',
                       }}
                     />
                     <span className="text-[10px] text-gray-400">{THEME_LABELS[t]}</span>
@@ -99,7 +94,7 @@ export function SettingsPopover({ theme, onThemeChange, onBgUpload, onBgRemove, 
             <div>
               <label className="text-[10px] text-gray-500 block mb-2">背景图片</label>
               <div className="flex gap-2">
-                <label className="flex-1 px-3 py-1.5 text-xs rounded bg-[#2a2a4a] text-gray-300 hover:bg-[#3a3a5a] cursor-pointer transition-colors text-center">
+                <label className="flex-1 px-3 py-1.5 text-xs rounded-2xl bg-white/10 text-gray-300 hover:bg-white/20 cursor-pointer transition-colors text-center">
                   {hasBg ? '更换图片' : '选择图片'}
                   <input
                     type="file"
@@ -118,7 +113,7 @@ export function SettingsPopover({ theme, onThemeChange, onBgUpload, onBgRemove, 
                 {hasBg && (
                   <button
                     onClick={onBgRemove}
-                    className="px-3 py-1.5 text-xs rounded bg-[#2a2a4a] text-red-400 hover:bg-[#3a3a3a] transition-colors"
+                    className="px-3 py-1.5 text-xs rounded-2xl bg-white/10 text-red-400 hover:bg-white/20 transition-colors"
                   >
                     移除
                   </button>

@@ -1,0 +1,10 @@
+{
+  "id": "taste-skill",
+  "name": "Taste Skill",
+  "description": "Anti-Slop Frontend Design Framework — 赋予 AI 良好的前端设计品味",
+  "category": "编程",
+  "enabled": false,
+  "builtin": false,
+  "hidden": false,
+  "type": "prompt"
+}

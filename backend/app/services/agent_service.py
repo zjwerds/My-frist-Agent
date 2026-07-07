@@ -60,6 +60,10 @@ async def run_agent_stream(
                     usage = chunk.usage
                 delta = chunk.choices[0].delta if chunk.choices else None
                 if not delta:
+                    if chunk.choices and chunk.choices[0].finish_reason == "length":
+                        yield {"event": "warning", "data": json.dumps({
+                            "warning": "回答已达输出长度上限，已截断。请简化问题或分次提问"
+                        })}
                     continue
 
                 if delta.content:

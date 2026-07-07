@@ -68,9 +68,7 @@ export function SkillsPopover() {
       <button
         onClick={() => setOpen(!open)}
         className={`w-7 h-7 flex items-center justify-center rounded transition-colors ${
-          open
-            ? 'bg-[#2a2a4a] text-white'
-            : 'text-gray-400 hover:bg-[#1a1a30] hover:text-gray-200'
+          open ? 'bg-black/15 text-gray-900' : 'text-gray-500 hover:bg-black/10 hover:text-gray-700'
         }`}
         title="Skill 管理"
       >
@@ -82,15 +80,10 @@ export function SkillsPopover() {
       {/* Popover panel */}
       {open && (
         <div
-          className="absolute top-full right-0 z-50 w-[320px] mt-1 overflow-hidden"
-          style={{
-            background: '#1a1a30',
-            border: '1px solid #2a2a4a',
-            borderRadius: '8px',
-          }}
+          className="absolute top-full right-0 z-50 w-[320px] mt-1 overflow-hidden glass-sm rounded-2xl"
         >
           {/* Header */}
-          <div className="px-3 py-2 border-b border-[#2a2a4a] flex items-center justify-between">
+          <div className="px-3 py-2 border-b border-white/10 flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <svg className="w-3.5 h-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
@@ -116,12 +109,12 @@ export function SkillsPopover() {
                 {cat.skills.map((skill) => (
                   <div
                     key={skill.id}
-                    className="group flex items-center justify-between px-2 py-1.5 rounded text-xs text-gray-400 hover:bg-[#1e1e3a] transition-colors"
+                    className="group flex items-center justify-between px-2 py-1.5 rounded text-xs text-gray-400 hover:bg-white/10 transition-colors"
                   >
                     <div className="flex-1 min-w-0 flex items-center gap-2">
                       <span className="truncate">{skill.name}</span>
                       {skill.builtin && (
-                        <span className="text-[9px] text-gray-600 px-1 rounded bg-[#2a2a4a] shrink-0">内置</span>
+                        <span className="text-[9px] text-gray-500 px-1 rounded bg-white/10 shrink-0">内置</span>
                       )}
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
@@ -143,7 +136,7 @@ export function SkillsPopover() {
                           onChange={() => handleToggle(skill.id)}
                           className="sr-only peer"
                         />
-                        <div className="w-7 h-3.5 bg-[#3a3a5a] rounded-full peer peer-checked:bg-[#4fc3f7] after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-[14px]" />
+                        <div className="w-7 h-3.5 bg-white/15 rounded-full peer peer-checked:bg-[#4fc3f7] after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-[14px]" />
                       </label>
                     </div>
                   </div>

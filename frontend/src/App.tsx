@@ -16,7 +16,7 @@ export default function App() {
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null)
   const [currentProjectPath, setCurrentProjectPath] = useState<string | null>(null)
   const [activeFilePath, setActiveFilePath] = useState<string | null>(null)
-  const [theme, setTheme] = useState('warm')
+  const [theme, setTheme] = useState('theme1')
   const [bgImage, setBgImage] = useState<string | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
   const [temperature, setTemperature] = useState(0.5)
@@ -26,7 +26,7 @@ export default function App() {
   const [showSkillReminder, setShowSkillReminder] = useState(false)
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem(STORAGE_THEME) || 'warm'
+    const savedTheme = localStorage.getItem(STORAGE_THEME) || 'theme1'
     const savedBg = localStorage.getItem(STORAGE_BG)
     const savedProject = localStorage.getItem(STORAGE_PROJECT)
     setTheme(savedTheme)
@@ -126,11 +126,13 @@ export default function App() {
   const handleBgUpload = (dataUrl: string) => {
     setBgImage(dataUrl)
     localStorage.setItem(STORAGE_BG, dataUrl)
+    document.documentElement.setAttribute('data-bg', 'true')
   }
 
   const handleBgRemove = () => {
     setBgImage(null)
     localStorage.removeItem(STORAGE_BG)
+    document.documentElement.removeAttribute('data-bg')
   }
 
   const handleMessageComplete = () => setRefreshKey((k) => k + 1)
@@ -190,7 +192,7 @@ export default function App() {
   // ── Full-screen loading overlay during initial backend startup ──────────
   if (backendStarting && !backendOk) {
     return (
-      <div className="flex items-center justify-center h-screen w-screen bg-[#1a1a2e]" style={{ fontFamily: 'system-ui, sans-serif' }}>
+      <div className="flex items-center justify-center h-screen w-screen app-bg" style={{ fontFamily: 'system-ui, sans-serif' }}>
         <div className="flex flex-col items-center gap-4">
           <svg width="48" height="48" viewBox="0 0 80 80" fill="none" className="text-gray-500 animate-pulse">
             <ellipse cx="40" cy="43" rx="22" ry="28" stroke="currentColor" strokeWidth="1.5" />
@@ -226,7 +228,7 @@ export default function App() {
   }
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden">
+    <div className="flex flex-col h-screen w-screen overflow-hidden app-bg">
       <MenuBar
         theme={theme}
         onThemeChange={handleThemeChange}
@@ -252,7 +254,7 @@ export default function App() {
       />
       {/* Skill reminder banner */}
       {showSkillReminder && (
-        <div className="flex items-center gap-3 px-4 py-2 bg-[#2a2a4a] border-b border-[#3a3a5a] text-sm">
+        <div className="flex items-center gap-3 px-4 py-2 glass-sm border-b border-white/10 text-sm">
           <span className="text-xs text-gray-300">
             💡 你还没有启用任何技能。前往 <strong>工具 → 技能管理</strong> 选择你需要的技能以获得更好体验
           </span>
@@ -292,8 +294,8 @@ export default function App() {
           onCreateProject={handleCreateProject}
         />
         {!backendOk && (
-          <div className="absolute top-0 left-0 right-0 z-40 flex items-center justify-center gap-2 py-2 bg-red-500/90 text-white text-xs">
-            <span>⚠️ 后端服务未连接，请检查 <code className="px-1 bg-black/20 rounded">deepseek-agent-backend.exe</code> 是否正在运行</span>
+          <div className="absolute top-0 left-0 right-0 z-40 flex items-center justify-center gap-2 py-2 bg-red-500/70 backdrop-blur-[20px] text-white text-xs">
+            <span>⚠️ 后端服务未连接，请检查 <code className="px-1 bg-white/10 rounded">deepseek-agent-backend.exe</code> 是否正在运行</span>
             <button
               onClick={() => checkBackendHealth().then(setBackendOk)}
               className="px-2 py-0.5 bg-white/20 rounded hover:bg-white/30 transition-colors"

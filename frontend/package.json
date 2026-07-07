@@ -1,7 +1,7 @@
 {
   "name": "deepseek-agent",
   "private": true,
-  "version": "1.0.1",
+  "version": "2.0.0",
   "type": "module",
   "main": "electron/main.cjs",
   "scripts": {
@@ -61,6 +61,8 @@
     "@types/react-dom": "^19.2.3",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@vitejs/plugin-react": "^6.0.2",
+    "7zip-bin": "^5.2.0",
+    "app-builder-bin": "^5.0.0-alpha.10",
     "concurrently": "^9.2.3",
     "electron": "^33.4.11",
     "electron-builder": "^25.1.8",

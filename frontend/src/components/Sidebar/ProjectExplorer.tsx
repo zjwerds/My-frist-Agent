@@ -308,7 +308,7 @@ function TreeNode({ entry, expandedDirs, dirCache, onToggle, onOpenFile, onDelet
     <>
       <button
         onClick={handleClick}
-        className="w-full flex items-center gap-1.5 px-3 py-1 text-xs text-gray-400 hover:text-white hover:bg-[#1e1e3a] rounded-md transition-colors text-left group"
+        className="w-full flex items-center gap-1.5 px-3 py-1 text-xs text-gray-400 hover:text-white hover:bg-white/10 rounded-2xl transition-colors text-left group"
         title={entry.path}
         style={{ paddingLeft: `${12 + depth * 14}px` }}
       >
@@ -553,7 +553,7 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
   if (!currentProjectPath) {
     return (
       <div
-        className={`rounded-lg overflow-hidden pt-1 transition-colors ${dragOver ? 'ring-2 ring-[#4fc3f7] bg-[#1e1e3a]/50' : ''}`}
+        className={`rounded-2xl overflow-hidden pt-1 transition-colors ${dragOver ? 'ring-2 ring-[#4fc3f7] bg-white/10' : ''}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -570,7 +570,7 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
                 value={newProjectName}
                 onChange={(e) => setNewProjectName(e.target.value)}
                 placeholder="输入项目文件夹名称"
-                className="w-full px-3 py-1.5 text-xs bg-[#0d0d1a] text-gray-200 border border-[#2a2a4a] rounded-md outline-none focus:border-[#4a4a6a]"
+                className="w-full px-3 py-1.5 text-xs bg-white/10 backdrop-blur-[40px] text-gray-200 border border-white/15 rounded-2xl outline-none focus:border-white/30"
                 onKeyDown={(e) => { if (e.key === 'Enter') handleCreateProject() }}
                 autoFocus
               />
@@ -578,7 +578,7 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
                 <button
                   onClick={handleCreateProject}
                   disabled={creatingProject || !newProjectName.trim()}
-                  className="flex-1 px-3 py-1.5 text-xs text-white bg-[#2a2a5a] hover:bg-[#3a3a6a] rounded-md transition-colors disabled:opacity-50"
+                  className="flex-1 px-3 py-1.5 text-xs text-white bg-white/15 hover:bg-white/25 rounded-2xl transition-colors disabled:opacity-50"
                 >
                   {creatingProject ? '创建中...' : '创建'}
                 </button>
@@ -595,7 +595,7 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleOpenFolder}
-                  className="flex items-center gap-2 px-4 py-2 text-xs text-gray-300 bg-[#1e1e3a] hover:bg-[#2a2a4a] hover:text-white rounded-md transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 text-xs text-gray-300 bg-white/10 hover:bg-white/20 hover:text-white rounded-2xl transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
@@ -624,7 +624,7 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
   // --- Project is open ---
   return (
     <div
-      className={`rounded-lg overflow-hidden pt-2 transition-colors ${dragOver ? 'ring-2 ring-[#4fc3f7] bg-[#1e1e3a]/50' : ''}`}
+      className={`rounded-2xl overflow-hidden pt-2 transition-colors ${dragOver ? 'ring-2 ring-[#4fc3f7] bg-white/10' : ''}`}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
@@ -715,7 +715,7 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
 
           {/* Inline create file/folder input */}
           {creating && (
-            <div className="flex items-center gap-1 px-3 py-1 border-t border-[#2a2a4a]">
+            <div className="flex items-center gap-1 px-3 py-1 border-t border-white/10">
               {creating === 'folder' ? <FolderIcon /> : <FileIcon ext="" />}
               <input
                 ref={newItemInputRef}
@@ -727,12 +727,12 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
                   if (e.key === 'Escape') handleCreateCancel()
                 }}
                 placeholder={creating === 'folder' ? '文件夹名称' : '文件名 (如 main.py)'}
-                className="flex-1 px-2 py-1 text-xs bg-[#0d0d1a] text-gray-200 border border-[#2a2a4a] rounded outline-none focus:border-[#4fc3f7] placeholder-gray-600"
+                className="flex-1 px-2 py-1 text-xs bg-white/10 backdrop-blur-[40px] text-gray-200 border border-white/15 rounded-2xl outline-none focus:border-[#4fc3f7] placeholder-gray-600"
               />
               <button
                 onClick={handleCreateSubmit}
                 disabled={!newItemName.trim()}
-                className="px-2 py-1 text-[10px] text-white bg-[#2a2a5a] hover:bg-[#3a3a6a] rounded disabled:opacity-40 transition-colors"
+                className="px-2 py-1 text-[10px] text-white bg-white/15 hover:bg-white/25 rounded-2xl disabled:opacity-40 transition-colors"
               >
                 确定
               </button>
@@ -775,7 +775,7 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
 
       {/* Delete confirmation dialog */}
       {deleteTarget && (
-        <div className="px-3 py-2 border-t border-[#2a2a4a]">
+        <div className="px-3 py-2 border-t border-white/10">
           {deleting ? (
             <div className="text-xs text-gray-500 text-center">删除中...</div>
           ) : (
@@ -787,7 +787,7 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
               <div className="flex gap-2">
                 <button
                   onClick={confirmDeleteDir}
-                  className="flex-1 px-2 py-1 text-[10px] text-white bg-red-500/80 hover:bg-red-500 rounded transition-colors"
+                  className="flex-1 px-2 py-1 text-[10px] text-white bg-red-500/80 hover:bg-red-500 rounded-2xl transition-colors"
                 >
                   删除
                 </button>

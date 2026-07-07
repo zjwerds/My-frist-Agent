@@ -1,42 +1,58 @@
 @import "tailwindcss";
 
-:root {
-  --bg: #fdf6ee;
-  --accent: #f59e6b;
-  --accent-hover: #e8884f;
-  --accent-dim: rgba(245, 158, 107, 0.15);
-  --bubble-user: #f59e6b;
-  --glass-bg: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.12);
-  --glass-border-hover: rgba(255, 255, 255, 0.2);
-  --text-primary: #1a1a2e;
-  --text-secondary: #6b5e55;
-  --sidebar-bg: rgba(22, 22, 42, 0.85);
-  --surface-dark: #1a1a30;
-  --surface-hover: #1e1e3a;
-  --border-dark: #2a2a4a;
+/* ── Theme 1: 深邃蓝黑（默认） ── */
+:root,
+[data-theme="theme1"] {
+  --bg: #18181b;
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --border: rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.20);
+  --accent-1: #3b82f6;
+  --accent-2: #8b5cf6;
+  --accent-3: #ec4899;
+  --accent-4: #f97316;
+  --accent: var(--accent-1);
+  --accent-hover: #2563eb;
+  --accent-dim: rgba(59, 130, 246, 0.15);
+  --bubble-user: var(--accent-1);
 }
 
-[data-theme="mint"] {
-  --bg: #f5f0e8;
-  --accent: #8fb396;
-  --accent-hover: #7aa385;
-  --accent-dim: rgba(143, 179, 150, 0.15);
-  --bubble-user: #8fb396;
-  --text-primary: #1a1a2e;
-  --text-secondary: #5c6b5a;
-  --sidebar-bg: rgba(22, 22, 42, 0.85);
+/* ── Theme 2: 极简黑白 ── */
+[data-theme="theme2"] {
+  --bg: #000000;
+  --text-primary: #ffffff;
+  --text-secondary: #a3a3a3;
+  --text-muted: #737373;
+  --border: rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.20);
+  --accent-1: #ff006e;
+  --accent-2: #ccff00;
+  --accent-3: #00d9ff;
+  --accent-4: #ff9500;
+  --accent: var(--accent-1);
+  --accent-hover: #d6005c;
+  --accent-dim: rgba(255, 0, 110, 0.15);
+  --bubble-user: var(--accent-1);
 }
 
-[data-theme="lavender"] {
-  --bg: #faf0f5;
-  --accent: #c9a0d4;
-  --accent-hover: #b98cc6;
-  --accent-dim: rgba(201, 160, 212, 0.15);
-  --bubble-user: #c9a0d4;
-  --text-primary: #1a1a2e;
-  --text-secondary: #6b5a6b;
-  --sidebar-bg: rgba(22, 22, 42, 0.85);
+/* ── Theme 3: 暗紫橙金 ── */
+[data-theme="theme3"] {
+  --bg: #1a1a2e;
+  --text-primary: #f5f5f5;
+  --text-secondary: #a0a0b0;
+  --text-muted: #70707a;
+  --border: rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.20);
+  --accent-1: #e94560;
+  --accent-2: #16c79a;
+  --accent-3: #ffd460;
+  --accent-4: #7579e7;
+  --accent: var(--accent-1);
+  --accent-hover: #d63852;
+  --accent-dim: rgba(233, 69, 96, 0.15);
+  --bubble-user: var(--accent-1);
 }
 
 html, body, #root {
@@ -46,43 +62,85 @@ html, body, #root {
 
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text-primary);
   background: var(--bg);
-  color: #e0e0e0;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ── Glassmorphism utilities ── */
+/* ── App background ── */
+.app-bg {
+  background: var(--bg);
+}
+
+/* ── Liquid Glass utilities ── */
 
 .glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(60px) saturate(180%);
+  -webkit-backdrop-filter: blur(60px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.glass-sm {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid var(--glass-border);
-}
-
-.glass-input {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-top: 1px solid var(--glass-border);
+[data-bg] .glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(60px) saturate(180%);
+  -webkit-backdrop-filter: blur(60px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.15), transparent 50%);
+}
+
+[data-bg] .glass-card {
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(15px) saturate(180%);
+  -webkit-backdrop-filter: blur(15px) saturate(180%);
 }
 
 .glass-card:hover {
-  border-color: var(--glass-border-hover);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.glass-sm {
+  background: rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+[data-bg] .glass-sm {
+  background: rgba(255, 255, 255, 0.20);
+  backdrop-filter: blur(15px) saturate(180%);
+  -webkit-backdrop-filter: blur(15px) saturate(180%);
+}
+
+/* ── Menu Bar context ── */
+.menu-bar-glass {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.10);
+}
+
+[data-bg] .menu-bar-glass {
+  background: rgba(255, 255, 255, 0.50);
+  backdrop-filter: blur(15px) saturate(180%);
+  -webkit-backdrop-filter: blur(15px) saturate(180%);
+}
+
+.menu-dropdown {
+  background: rgba(255, 255, 255, 0.90);
+  backdrop-filter: blur(60px) saturate(180%);
+  -webkit-backdrop-filter: blur(60px) saturate(180%);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.80);
 }
 
 /* ── Accent color utilities ── */
@@ -111,14 +169,13 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #3a3a5a;
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #5a5a7a;
+  background: rgba(255, 255, 255, 0.25);
 }
 
-/* Hide scrollbar in popover/dialog panels while keeping scroll functionality */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -147,8 +204,8 @@ body {
   width: 13px;
   height: 13px;
   border-radius: 50%;
-  background: #e0e0e0;
-  border: 1px solid #666;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   cursor: pointer;
   box-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
@@ -157,8 +214,8 @@ body {
   width: 13px;
   height: 13px;
   border-radius: 50%;
-  background: #e0e0e0;
-  border: 1px solid #666;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   cursor: pointer;
 }
 

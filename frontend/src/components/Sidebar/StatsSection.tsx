@@ -123,7 +123,7 @@ export function StatsSection() {
                 <BarChartIcon />
                 <span>Token 用量</span>
               </div>
-              <div className="bg-[#1e1e3a]/30 rounded-lg px-2.5 py-1.5 space-y-0.5 border border-[#2a2a4a]/30">
+              <div className="bg-white/10 backdrop-blur-[40px] rounded-2xl px-2.5 py-1.5 space-y-0.5 border border-white/10">
                 <div className="flex justify-between text-[11px]">
                   <span className="text-gray-500">Prompt</span>
                   <span className="text-gray-300">{formatNum(stats.total_prompt_tokens)}</span>
@@ -132,7 +132,7 @@ export function StatsSection() {
                   <span className="text-gray-500">Completion</span>
                   <span className="text-gray-300">{formatNum(stats.total_completion_tokens)}</span>
                 </div>
-                <div className="flex justify-between text-[11px] border-t border-[#2a2a4a]/50 pt-0.5 mt-0.5">
+                <div className="flex justify-between text-[11px] border-t border-white/10 pt-0.5 mt-0.5">
                   <span className="text-gray-400 font-medium">总计</span>
                   <span className="text-gray-200 font-medium">{formatNum(stats.total_tokens)}</span>
                 </div>

@@ -114,7 +114,7 @@ export function ApiConfigPopover({ onSaved }: ApiConfigPopoverProps) {
       {/* Trigger: API status dot + lock icon */}
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 px-2.5 py-1 rounded transition-colors hover:bg-[#1e1e3a] hover:shadow-[0_0_8px_rgba(245,158,107,0.15)]"
+        className="flex items-center gap-1.5 px-2.5 py-1 rounded transition-colors hover:bg-black/10 hover:shadow-[0_0_8px_rgba(245,158,107,0.15)]"
         title={configured ? `API 已配置 (${model})` : 'API 未配置 — 点击配置'}
       >
         <span className={`relative flex w-2.5 h-2.5 shrink-0 ${configured ? 'text-green-400' : 'text-gray-500'}`}>
@@ -132,12 +132,7 @@ export function ApiConfigPopover({ onSaved }: ApiConfigPopoverProps) {
       {/* Popover */}
       {open && (
         <div
-          className="absolute top-full right-0 z-50 w-[280px] mt-1 overflow-hidden"
-          style={{
-            background: '#1a1a30',
-            border: '1px solid #2a2a4a',
-            borderRadius: '8px',
-          }}
+          className="absolute top-full right-0 z-50 w-[280px] mt-1 overflow-hidden glass-sm rounded-2xl"
         >
           <div className="p-3 space-y-2.5">
             <div className="flex items-center justify-between">
@@ -152,7 +147,7 @@ export function ApiConfigPopover({ onSaved }: ApiConfigPopoverProps) {
                 type="password"
                 value={apiKey}
                 onChange={(e) => { setApiKey(e.target.value); setKeyModified(true) }}
-                className="w-full bg-[#0d0d1a] border border-[#2a2a4a] rounded px-2 py-1.5 text-xs text-gray-200 outline-none focus:border-[#4a4a7a] placeholder:text-gray-600"
+                className="w-full bg-white/10 backdrop-blur-[40px] border border-white/15 rounded-2xl px-2 py-1.5 text-xs text-gray-200 outline-none focus:border-white/30 placeholder:text-gray-600"
                 placeholder="sk-..."
               />
             </div>
@@ -162,7 +157,7 @@ export function ApiConfigPopover({ onSaved }: ApiConfigPopoverProps) {
                 type="text"
                 value={baseUrl}
                 onChange={(e) => setBaseUrl(e.target.value)}
-                className="w-full bg-[#0d0d1a] border border-[#2a2a4a] rounded px-2 py-1.5 text-xs text-gray-200 outline-none focus:border-[#4a4a7a]"
+                className="w-full bg-white/10 backdrop-blur-[40px] border border-white/15 rounded-2xl px-2 py-1.5 text-xs text-gray-200 outline-none focus:border-white/30"
               />
             </div>
             <div>
@@ -172,14 +167,14 @@ export function ApiConfigPopover({ onSaved }: ApiConfigPopoverProps) {
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleSave() }}
-                className="w-full bg-[#0d0d1a] border border-[#2a2a4a] rounded px-2 py-1.5 text-xs text-gray-200 outline-none focus:border-[#4a4a7a]"
+                className="w-full bg-white/10 backdrop-blur-[40px] border border-white/15 rounded-2xl px-2 py-1.5 text-xs text-gray-200 outline-none focus:border-white/30"
               />
             </div>
             <div className="flex gap-2 pt-1">
               <button
                 onClick={handleTest}
                 disabled={testing || !apiKey}
-                className="flex-1 px-3 py-1.5 text-xs rounded bg-[#2a2a4a] text-gray-300 hover:bg-[#3a3a5a] transition-colors disabled:opacity-40"
+                className="flex-1 px-3 py-1.5 text-xs rounded-2xl bg-white/10 text-gray-300 hover:bg-white/20 transition-colors disabled:opacity-40"
               >
                 {testing ? '测试中...' : '测试连接'}
               </button>

@@ -136,12 +136,12 @@ export function FileViewer({ filePath, onClose, currentProjectPath }: FileViewer
       </div>
 
       {/* Panel content */}
-      <div className="flex-1 flex flex-col min-w-0 border-l border-[#2a2a4a] bg-[#1a1a30]/90 backdrop-blur-sm">
+      <div className="flex-1 flex flex-col min-w-0 border-l border-white/10 glass">
         {/* Header */}
-        <div className="flex items-center gap-2 px-3 py-2 border-b border-[#2a2a4a] shrink-0">
+        <div className="flex items-center gap-2 px-3 py-2 border-b border-white/10 shrink-0">
           <button
             onClick={onClose}
-            className="p-1 text-gray-500 hover:text-gray-200 hover:bg-[#2a2a4a] rounded transition-colors"
+            className="p-1 text-gray-500 hover:text-gray-200 hover:bg-white/10 rounded transition-colors"
             title="关闭面板 (拖拽到最右也可关闭)"
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

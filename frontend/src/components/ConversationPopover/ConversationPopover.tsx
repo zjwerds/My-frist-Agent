@@ -82,7 +82,7 @@ export function ConversationPopover({
       <button
         onClick={() => setOpen(!open)}
         className={`w-7 h-7 flex items-center justify-center rounded transition-colors ${
-          open ? 'bg-[#2a2a4a] text-white' : 'text-gray-400 hover:bg-[#1a1a30] hover:text-gray-200'
+          open ? 'bg-black/15 text-gray-900' : 'text-gray-500 hover:bg-black/10 hover:text-gray-700'
         }`}
         title="对话历史"
       >
@@ -96,17 +96,12 @@ export function ConversationPopover({
       {/* Popover dropdown */}
       {open && (
         <div
-          className="absolute top-full right-0 z-50 w-[280px] mt-1 overflow-hidden"
-          style={{
-            background: '#1a1a30',
-            border: '1px solid #2a2a4a',
-            borderRadius: '8px',
-          }}
+          className="absolute top-full right-0 z-50 w-[280px] mt-1 overflow-hidden glass-sm rounded-2xl"
         >
           {/* New Conversation button */}
           <button
             onClick={handleNew}
-            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-gray-300 hover:bg-[#2a2a4a] hover:text-white border-b border-[#2a2a4a] transition-colors"
+            className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-white border-b border-white/10 transition-colors"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <line x1="12" y1="5" x2="12" y2="19" />
@@ -128,8 +123,8 @@ export function ConversationPopover({
                 onClick={() => { onSelect(conv); setOpen(false) }}
                 className={`group flex items-center justify-between px-3 py-2 cursor-pointer text-sm transition-colors ${
                   activeConversationId === conv.id
-                    ? 'bg-[#2a2a5a] text-white'
-                    : 'text-gray-400 hover:bg-[#1e1e3a] hover:text-gray-200'
+                    ? 'bg-white/15 text-white'
+                    : 'text-gray-400 hover:bg-white/10 hover:text-gray-200'
                 }`}
               >
                 <div className="flex-1 min-w-0">
@@ -140,7 +135,7 @@ export function ConversationPopover({
                 </div>
                 <button
                   onClick={(e) => handleDelete(e, conv.id)}
-                  className="p-1 rounded text-gray-500 hover:bg-[#3a3a5a] hover:text-red-400 transition-colors shrink-0"
+                  className="p-1 rounded text-gray-500 hover:bg-white/10 hover:text-red-400 transition-colors shrink-0"
                   title="删除"
                 >
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">

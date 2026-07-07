@@ -4,6 +4,7 @@ import { ConversationPopover } from '../ConversationPopover/ConversationPopover'
 import { SkillsPopover } from '../SkillsPopover/SkillsPopover'
 import { SettingsPopover } from '../SettingsPopover/SettingsPopover'
 import { ApiConfigPopover } from '../ApiConfigPopover/ApiConfigPopover'
+import { ChangelogModal } from './ChangelogModal'
 
 interface MenuItem {
   label: string
@@ -38,6 +39,7 @@ const electronAPI = (window as unknown as { electronAPI?: { minimize?: () => voi
 export function MenuBar({ theme, onThemeChange, onNewConversation, onApiConfigSaved, activeConversationId, currentProjectPath, onSelectConversation, onDeleteConversation, refreshKey, onBgUpload, onBgRemove, hasBg, temperature, onTemperatureChange }: TitleBarProps) {
   const [openMenu, setOpenMenu] = useState<MenuId | null>(null)
   const [isMaximized, setIsMaximized] = useState(false)
+  const [showChangelog, setShowChangelog] = useState(false)
   const barRef = useRef<HTMLDivElement>(null)
 
   // Check initial maximized state
@@ -103,7 +105,9 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onApiConfigSa
     help: {
       label: '帮助',
       items: [
-        { label: '关于 煎蛋Agent', action: () => { alert('煎蛋Agent v1.0.1\n基于 DeepSeek V4 Flash 的 AI 编程助手。'); closeMenu() } },
+        { label: '更新日志', action: () => { setShowChangelog(true); closeMenu() } },
+        { label: '', divider: true },
+        { label: '关于 煎蛋Agent', action: () => { alert('煎蛋Agent v2.0.0\n基于 DeepSeek V4 Flash 的 AI 编程助手。'); closeMenu() } },
       ],
     },
   }
@@ -111,7 +115,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onApiConfigSa
   return (
     <div
       ref={barRef}
-      className="flex items-center h-[34px] bg-[#0d0d1a] select-none shrink-0"
+      className="flex items-center h-[34px] select-none shrink-0 menu-bar-glass relative z-40"
       style={{ appRegion: 'drag', WebkitAppRegion: 'drag' } as any}
       onDoubleClick={handleDoubleClick}
     >
@@ -121,7 +125,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onApiConfigSa
           <path d="M12 3C7 3 3.5 6 3.5 10c0 3 1.5 5.5 3.5 7s3.5 3 5 3 4-1 5.5-3 2.5-4 2.5-7c0-4-3-7-7.5-7z" />
           <circle cx="12" cy="10" r="4" fill="#f59e6b" stroke="none" />
         </svg>
-        <span className="text-xs font-semibold text-gray-300 tracking-wide">煎蛋</span>
+        <span className="text-xs font-semibold text-gray-800 tracking-wide">煎蛋</span>
       </div>
 
       {/* ── Menu Items ── */}
@@ -129,10 +133,10 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onApiConfigSa
         {(Object.entries(menus) as [MenuId, typeof menus[MenuId]][]).map(([id, menu]) => (
           <div key={id} className="relative h-full">
             <button
-              className={`px-3 h-full text-xs transition-colors ${
+              className={`px-3 h-full text-xs transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                 openMenu === id
-                  ? 'bg-[#1e1e3a] text-white'
-                  : 'text-gray-400 hover:bg-[#1a1a30] hover:text-gray-200'
+                  ? 'bg-black/15 text-gray-900'
+                  : 'text-gray-800 hover:bg-black/10 hover:text-gray-900'
               }`}
               style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag' } as any}
               onClick={() => toggleMenu(id)}
@@ -142,21 +146,17 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onApiConfigSa
 
             {openMenu === id && (
               <div
-                className="absolute top-full left-0 z-50 min-w-[180px] py-1"
-                style={{
-                  background: '#1e1e30',
-                  border: '1px solid #2a2a4a',
-                }}
+                className="absolute top-full left-0 z-50 min-w-[180px] py-1 menu-dropdown"
               >
                 {menu.items.map((item, idx) => {
                   if (item.divider) {
-                    return <div key={idx} className="h-[1px] mx-2 my-1 bg-[#2a2a4a]" />
+                    return <div key={idx} className="h-[1px] mx-2 my-1 bg-black/10" />
                   }
                   return (
                     <button
                       key={idx}
                       style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag' } as any}
-                      className="w-full px-3 py-1.5 text-left text-xs text-gray-300 hover:bg-[#2a2a4a] hover:text-white transition-colors"
+                      className="w-full px-3 py-1.5 text-left text-xs text-gray-800 hover:bg-black/10 hover:text-gray-900 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
                       onClick={item.action}
                     >
                       {item.label}
@@ -171,7 +171,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onApiConfigSa
 
       {/* ── Temperature slider ── */}
       <div className="flex-1 flex items-center justify-end gap-2 px-4">
-        <span className="text-[10px] text-gray-500 whitespace-nowrap shrink-0" title="控制AI回复的创造性：越低越精确，越高越发散">发散</span>
+        <span className="text-[10px] text-gray-400 whitespace-nowrap shrink-0" title="控制AI回复的创造性：越低越精确，越高越发散">发散</span>
         <input
           type="range"
           min="0"
@@ -183,7 +183,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onApiConfigSa
           style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag', background: `linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899, #ef4444)` } as any}
           title={`温度: ${(temperature ?? 0.5).toFixed(2)}`}
         />
-        <span className="text-xs font-mono text-gray-300 w-8 text-right shrink-0">
+        <span className="text-xs font-mono text-gray-700 w-8 text-right shrink-0">
           {(temperature ?? 0.5).toFixed(2)}
         </span>
       </div>
@@ -227,7 +227,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onApiConfigSa
       {electronAPI && (
         <div className="flex h-full" style={{ appRegion: 'no-drag', WebkitAppRegion: 'no-drag' } as any}>
           <button
-            className="w-[46px] h-full flex items-center justify-center text-gray-400 hover:bg-[#1a1a30] hover:text-white text-xs transition-colors"
+            className="w-[46px] h-full flex items-center justify-center text-gray-400 hover:bg-black/10 hover:text-gray-700 text-xs transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
             onClick={handleMinimize}
             title="最小化"
           >
@@ -236,14 +236,14 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onApiConfigSa
             </svg>
           </button>
           <button
-            className="w-[46px] h-full flex items-center justify-center text-gray-400 hover:bg-[#1a1a30] hover:text-white text-xs transition-colors"
+            className="w-[46px] h-full flex items-center justify-center text-gray-400 hover:bg-black/10 hover:text-gray-700 text-xs transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
             onClick={handleMaximize}
             title={isMaximized ? '还原' : '最大化'}
           >
             {isMaximized ? (
               <svg width="12" height="12" viewBox="0 0 12 12">
                 <rect x="2.5" y="0.5" width="9" height="9" rx="1" fill="none" stroke="currentColor" strokeWidth="1" />
-                <rect x="0.5" y="2.5" width="9" height="9" rx="1" fill="#0d0d1a" stroke="currentColor" strokeWidth="1" />
+                <rect x="0.5" y="2.5" width="9" height="9" rx="1" fill="transparent" stroke="currentColor" strokeWidth="1" />
               </svg>
             ) : (
               <svg width="12" height="12" viewBox="0 0 12 12">
@@ -252,7 +252,7 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onApiConfigSa
             )}
           </button>
           <button
-            className="w-[46px] h-full flex items-center justify-center text-gray-400 hover:bg-red-500 hover:text-white text-xs transition-colors"
+            className="w-[46px] h-full flex items-center justify-center text-gray-400 hover:bg-red-500/70 hover:text-white text-xs transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
             onClick={handleClose}
             title="关闭"
           >
@@ -263,6 +263,8 @@ export function MenuBar({ theme, onThemeChange, onNewConversation, onApiConfigSa
           </button>
         </div>
       )}
+
+      {showChangelog && <ChangelogModal onClose={() => setShowChangelog(false)} />}
     </div>
   )
 }

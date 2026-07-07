@@ -57,14 +57,14 @@ function CodeBlockToolbar({ code, language, currentProjectPath }: CodeBlockToolb
   }
 
   return (
-    <div className="flex items-center justify-between px-4 py-1.5 bg-[#0d0d1a] border-b border-[#2a2a4a] rounded-t-lg">
+    <div className="flex items-center justify-between px-4 py-1.5 glass-sm border-b border-white/10 rounded-t-2xl">
       <span className="text-[10px] text-gray-500 uppercase">{language}</span>
       <div className="flex items-center gap-1">
         {currentProjectPath && (
           <button
             onClick={handleSaveFile}
             disabled={saving}
-            className="flex items-center gap-1 px-2 py-0.5 text-[10px] text-gray-400 hover:text-white bg-[#1e1e3a] hover:bg-[#2a2a4a] rounded transition-colors disabled:opacity-50"
+            className="flex items-center gap-1 px-2 py-0.5 text-[10px] text-gray-400 hover:text-white bg-white/10 hover:bg-white/20 rounded-2xl transition-colors disabled:opacity-50"
             title="保存到项目文件夹"
           >
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -77,7 +77,7 @@ function CodeBlockToolbar({ code, language, currentProjectPath }: CodeBlockToolb
         )}
         <button
           onClick={handleCopy}
-          className="flex items-center gap-1 px-2 py-0.5 text-[10px] text-gray-400 hover:text-white bg-[#1e1e3a] hover:bg-[#2a2a4a] rounded transition-colors"
+          className="flex items-center gap-1 px-2 py-0.5 text-[10px] text-gray-400 hover:text-white bg-white/10 hover:bg-white/20 rounded-2xl transition-colors"
           title="复制代码"
         >
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
@@ -192,7 +192,7 @@ function ToolCallBubble({ content }: { content: string }) {
 // ── File reference badge ──
 function FileRefBadge({ match }: { match: RegExpMatchArray }) {
   return (
-    <div className="flex items-center gap-1.5 text-xs mb-2 px-2.5 py-1.5 rounded-lg bg-black/10 border border-white/10">
+    <div className="flex items-center gap-1.5 text-xs mb-2 px-2.5 py-1.5 rounded-2xl bg-white/10 border border-white/10">
       <span>{match[1]}</span>
       <span className="font-medium truncate max-w-[180px] text-gray-200">{match[2]}</span>
       <span className="text-gray-500">{match[3]}</span>
@@ -273,12 +273,12 @@ export function MessageBubble({ message, isStreaming, onEdit, onBranch, currentP
               value={editText}
               onChange={(e) => setEditText(e.target.value)}
               rows={3}
-              className="w-full bg-[#0d0d1a]/30 border border-[#2a2a4a] rounded px-2 py-1.5 text-sm text-[#0d0d1a] outline-none focus:border-[#4a4a7a] resize-none"
+              className="w-full bg-white/20 backdrop-blur-[40px] border border-white/20 rounded-2xl px-2 py-1.5 text-sm text-[#0d0d1a] outline-none focus:border-white/40 resize-none"
             />
             <div className="flex gap-2 mt-2 justify-end">
               <button
                 onClick={handleCancelEdit}
-                className="px-2.5 py-1 text-xs rounded bg-[#2a2a4a]/50 text-gray-400 hover:bg-[#3a3a5a] transition-colors"
+                className="px-2.5 py-1 text-xs rounded-2xl bg-white/10 text-gray-400 hover:bg-white/20 transition-colors"
               >
                 取消
               </button>
@@ -300,7 +300,7 @@ export function MessageBubble({ message, isStreaming, onEdit, onBranch, currentP
               <div className="space-y-3">
                 {segments.map((seg, i) =>
                   seg.type === 'code' ? (
-                    <div key={i} className="my-1.5 rounded-lg overflow-hidden border border-[#2a2a4a]">
+                    <div key={i} className="my-1.5 rounded-2xl overflow-hidden border border-white/10">
                       <CodeBlockToolbar
                         code={seg.code}
                         language={seg.language}
@@ -342,7 +342,7 @@ export function MessageBubble({ message, isStreaming, onEdit, onBranch, currentP
           {isUser && !hasImages && onEdit && (
             <button
               onClick={handleStartEdit}
-              className="w-6 h-6 flex items-center justify-center rounded text-gray-500 hover:text-gray-300 hover:bg-[#1e1e3a] transition-colors"
+              className="w-6 h-6 flex items-center justify-center rounded text-gray-500 hover:text-gray-300 hover:bg-white/10 transition-colors"
               title="编辑消息"
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -353,7 +353,7 @@ export function MessageBubble({ message, isStreaming, onEdit, onBranch, currentP
           {onBranch && (
             <button
               onClick={() => onBranch(message.id)}
-              className="w-6 h-6 flex items-center justify-center rounded text-gray-500 hover:text-gray-300 hover:bg-[#1e1e3a] transition-colors"
+              className="w-6 h-6 flex items-center justify-center rounded text-gray-500 hover:text-gray-300 hover:bg-white/10 transition-colors"
               title="从此处创建分支"
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

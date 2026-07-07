@@ -378,7 +378,7 @@ export function ChatInput({ onSend, isLoading, disabled, onCancel }: ChatInputPr
             placeholder={disabled ? '请先新建对话' : '输入消息，粘贴图片或文件... (Enter 发送, Shift+Enter 换行)'}
             disabled={isLoading || disabled}
             rows={1}
-            className="flex-1 bg-white/70 backdrop-blur-sm text-black rounded-xl px-4 py-2.5 text-sm placeholder-gray-400 resize-none outline-none focus:ring-1 focus:ring-[#4fc3f7] disabled:opacity-50 transition-all border border-white/20 focus:border-[#4fc3f7]/50 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="flex-1 bg-white/10 backdrop-blur-[40px] backdrop-saturate-[180%] text-gray-200 rounded-2xl px-4 py-2.5 text-sm placeholder-gray-500 resize-none outline-none focus:ring-1 focus:ring-white/20 disabled:opacity-50 transition-all border border-white/15 focus:border-white/30 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           />
           <button
             onClick={isLoading && onCancel ? onCancel : handleSubmit}

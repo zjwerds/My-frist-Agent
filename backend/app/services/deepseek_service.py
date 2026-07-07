@@ -43,7 +43,6 @@ def chat_completion_stream(
         tool_choice="auto" if tools else None,
         stream=True,
         stream_options={"include_usage": True},
-        max_tokens=8192,
     )
     if temperature is not None:
         kwargs["temperature"] = temperature
@@ -64,7 +63,6 @@ async def chat_completion_stream_async(
         tool_choice="auto" if tools else None,
         stream=True,
         stream_options={"include_usage": True},
-        max_tokens=8192,
     )
     if temperature is not None:
         kwargs["temperature"] = temperature
