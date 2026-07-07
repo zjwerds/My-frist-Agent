@@ -3,7 +3,7 @@
 //   Browser mode: starts backend, opens browser, manages lifecycle.
 
 const path = require('path')
-const { spawn } = require('child_process')
+const { spawn, execSync } = require('child_process')
 const http = require('http')
 
 const PORT = 8000
@@ -11,6 +11,7 @@ const LOCK_PORT = 8001
 const isDev = process.env.NODE_ENV === 'development'
 let pythonProcess = null
 let restartCount = 0
+let isQuitting = false
 const MAX_RESTARTS = 3
 
 // ── Detect Electron API ────────────────────────────────────────────────────────
@@ -110,8 +111,8 @@ function startPython() {
     pythonProcess.on('exit', (code) => {
       console.log(`[main] Python process exited with code ${code}`)
       pythonProcess = null
-      // Watchdog: auto-restart backend if it crashes unexpectedly
-      if (code !== 0 && restartCount < MAX_RESTARTS) {
+      // Watchdog: auto-restart backend if it crashes unexpectedly (not during app quit)
+      if (!isQuitting && code !== 0 && restartCount < MAX_RESTARTS) {
         restartCount++
         console.log(`[main] Restarting backend (${restartCount}/${MAX_RESTARTS})...`)
         setTimeout(() => startPython().then(() => waitForBackend()), 1000)
@@ -148,14 +149,23 @@ function waitForBackend(retries = 20) {
 }
 
 function cleanupPython() {
+  isQuitting = true
+  // Kill tracked child process
   if (pythonProcess) {
     console.log('[main] Stopping Python backend...')
-    if (process.platform === 'win32') {
-      spawn('taskkill', ['/pid', String(pythonProcess.pid), '/f', '/t'])
-    } else {
-      pythonProcess.kill('SIGTERM')
-    }
+    const pid = pythonProcess.pid
     pythonProcess = null
+    try {
+      if (process.platform === 'win32') {
+        execSync(`taskkill /pid ${pid} /f /t`, { timeout: 3000 })
+      } else {
+        execSync(`kill -TERM ${pid}`, { timeout: 3000 })
+      }
+    } catch (_) {}
+  }
+  // Safety net: kill any orphaned backend processes
+  if (process.platform === 'win32') {
+    try { execSync('taskkill /f /im deepseek-agent-backend.exe', { timeout: 2000 }) } catch (_) {}
   }
 }
 
@@ -180,8 +190,8 @@ function runBrowser() {
       process.exit(1)
     })
 
-  process.on('SIGINT', () => { cleanupPython(); process.exit(0) })
-  process.on('SIGTERM', () => { cleanupPython(); process.exit(0) })
+  process.on('SIGINT', () => { isQuitting = true; cleanupPython(); process.exit(0) })
+  process.on('SIGTERM', () => { isQuitting = true; cleanupPython(); process.exit(0) })
 }
 
 // ── Electron Mode ──────────────────────────────────────────────────────────────
