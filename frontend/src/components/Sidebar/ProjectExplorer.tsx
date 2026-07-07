@@ -308,7 +308,7 @@ function TreeNode({ entry, expandedDirs, dirCache, onToggle, onOpenFile, onDelet
     <>
       <button
         onClick={handleClick}
-        className="w-full flex items-center gap-1.5 px-3 py-1 text-xs text-gray-400 hover:text-white hover:bg-white/10 rounded-2xl transition-colors text-left group"
+        className="w-full flex items-center gap-1.5 px-3 py-1 text-xs text-gray-300 hover:text-white hover:bg-white/10 rounded-2xl transition-colors text-left group"
         title={entry.path}
         style={{ paddingLeft: `${12 + depth * 14}px` }}
       >
@@ -558,7 +558,7 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <div className="flex items-center gap-2 px-3 py-1 text-sm font-medium text-gray-300">
+        <div className="flex items-center gap-2 px-3 py-1 text-sm font-medium text-gray-200">
           <FolderIcon />
           <span>资源管理器</span>
         </div>
@@ -570,7 +570,7 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
                 value={newProjectName}
                 onChange={(e) => setNewProjectName(e.target.value)}
                 placeholder="输入项目文件夹名称"
-                className="w-full px-3 py-1.5 text-xs bg-white/10 backdrop-blur-[40px] text-gray-200 border border-white/15 rounded-2xl outline-none focus:border-white/30"
+                className="w-full px-3 py-1.5 text-xs bg-white/10 backdrop-blur-[40px] text-white border border-white/15 rounded-2xl outline-none focus:border-white/30"
                 onKeyDown={(e) => { if (e.key === 'Enter') handleCreateProject() }}
                 autoFocus
               />
@@ -595,7 +595,7 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleOpenFolder}
-                  className="flex items-center gap-2 px-4 py-2 text-xs text-gray-300 bg-white/10 hover:bg-white/20 hover:text-white rounded-2xl transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 text-xs text-gray-200 bg-white/10 hover:bg-white/20 hover:text-white rounded-2xl transition-colors"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
@@ -613,7 +613,7 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
                   新建项目
                 </button>
               </div>
-              <span className="text-[10px] text-gray-600">或将文件夹拖放到此处</span>
+              <span className="text-[10px] text-gray-500">或将文件夹拖放到此处</span>
             </div>
           )}
         </div>
@@ -631,7 +631,7 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
     >
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors group"
+        className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-gray-200 hover:text-white transition-colors group"
       >
         <div className="flex items-center gap-2 min-w-0">
           <FolderIcon />
@@ -658,7 +658,7 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
               </svg>
             </button>
-            <span className="text-[10px] text-gray-500 truncate flex-1" title={currentProjectPath}>
+            <span className="text-[10px] text-gray-400 truncate flex-1" title={currentProjectPath}>
               {currentProjectPath}
             </span>
             <button
@@ -727,7 +727,7 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
                   if (e.key === 'Escape') handleCreateCancel()
                 }}
                 placeholder={creating === 'folder' ? '文件夹名称' : '文件名 (如 main.py)'}
-                className="flex-1 px-2 py-1 text-xs bg-white/10 backdrop-blur-[40px] text-gray-200 border border-white/15 rounded-2xl outline-none focus:border-[#4fc3f7] placeholder-gray-600"
+                className="flex-1 px-2 py-1 text-xs bg-white/10 backdrop-blur-[40px] text-white border border-white/15 rounded-2xl outline-none focus:border-[#4fc3f7] placeholder-gray-500"
               />
               <button
                 onClick={handleCreateSubmit}

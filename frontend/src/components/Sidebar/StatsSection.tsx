@@ -82,7 +82,7 @@ export function StatsSection() {
 
   return (
     <div className="rounded-lg overflow-hidden pt-2">
-      <div className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-300">
+      <div className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-200">
         <svg className="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12 3.5C7.5 3.5 4.5 6 4.5 9.5c0 2.5 1 4.5 2.5 6s3 2.5 5 2.5 3.5-.8 5-2.5 2.5-3.5 2.5-6c0-3.5-2.5-6-7-6z" />
           <circle cx="12" cy="9" r="3" fill="currentColor" opacity="0.6" stroke="none" />
@@ -106,11 +106,11 @@ export function StatsSection() {
           <div className="space-y-2.5">
             {/* Balance */}
             <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-1.5 text-gray-400">
+              <div className="flex items-center gap-1.5 text-gray-300">
                 <WalletIcon />
                 <span>余额</span>
               </div>
-              <span className="text-gray-200 font-medium">
+              <span className="text-white font-medium">
                 {stats.balance
                   ? `¥${parseFloat(stats.balance).toFixed(2)}`
                   : '--'}
@@ -119,29 +119,29 @@ export function StatsSection() {
 
             {/* Token Usage */}
             <div className="space-y-0.5">
-              <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
+              <div className="flex items-center gap-1.5 text-[10px] text-gray-400">
                 <BarChartIcon />
                 <span>Token 用量</span>
               </div>
               <div className="bg-white/10 backdrop-blur-[40px] rounded-2xl px-2.5 py-1.5 space-y-0.5 border border-white/10">
                 <div className="flex justify-between text-[11px]">
-                  <span className="text-gray-500">Prompt</span>
-                  <span className="text-gray-300">{formatNum(stats.total_prompt_tokens)}</span>
+                  <span className="text-gray-400">Prompt</span>
+                  <span className="text-gray-200">{formatNum(stats.total_prompt_tokens)}</span>
                 </div>
                 <div className="flex justify-between text-[11px]">
-                  <span className="text-gray-500">Completion</span>
-                  <span className="text-gray-300">{formatNum(stats.total_completion_tokens)}</span>
+                  <span className="text-gray-400">Completion</span>
+                  <span className="text-gray-200">{formatNum(stats.total_completion_tokens)}</span>
                 </div>
                 <div className="flex justify-between text-[11px] border-t border-white/10 pt-0.5 mt-0.5">
-                  <span className="text-gray-400 font-medium">总计</span>
-                  <span className="text-gray-200 font-medium">{formatNum(stats.total_tokens)}</span>
+                  <span className="text-gray-300 font-medium">总计</span>
+                  <span className="text-white font-medium">{formatNum(stats.total_tokens)}</span>
                 </div>
               </div>
             </div>
 
             {/* Cache Hit Rate */}
             <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-1.5 text-gray-400">
+              <div className="flex items-center gap-1.5 text-gray-300">
                 <ZapIcon />
                 <span>缓存命中率</span>
               </div>
@@ -157,7 +157,7 @@ export function StatsSection() {
             <button
               onClick={fetchStats}
               disabled={refreshing}
-              className="w-full flex items-center justify-center gap-1 text-[10px] text-gray-500 hover:text-gray-300 pt-0.5 transition-colors disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-1 text-[10px] text-gray-400 hover:text-gray-200 pt-0.5 transition-colors disabled:opacity-50"
             >
               <span className={refreshing ? 'animate-spin' : ''}>
                 <RefreshIcon />

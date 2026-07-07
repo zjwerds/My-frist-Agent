@@ -239,10 +239,10 @@ export function MessageBubble({ message, isStreaming, onEdit, onBranch, currentP
   return (
     <div className={`group flex ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div
-        className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
+        className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-white ${
           isUser
-            ? 'bg-accent text-[#0d0d1a] rounded-br-md'
-            : 'glass-sm text-black rounded-bl-md'
+            ? 'glass-sm rounded-br-md'
+            : 'glass-sm rounded-bl-md'
         }`}
       >
         {!isUser && isStreaming && (
