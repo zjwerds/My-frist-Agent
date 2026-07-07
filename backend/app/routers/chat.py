@@ -262,20 +262,6 @@ async def chat(
                         )
                     )
 
-                # AI-refined title for new conversations (≤13 chars)
-                conv = history_crud.get_conversation(db, conversation_id)
-                if conv and conv.message_count == 1:
-                    title = await generate_title(
-                        cfg["api_key"],
-                        cfg.get("base_url", "https://api.deepseek.com"),
-                        model_name,
-                        request.message or (request.images and "图片消息" or ""),
-                        full_response or "",
-                    )
-                    if title:
-                        conv.title = title[:13]
-                        db.commit()
-
                 yield "event: done\ndata: [DONE]\n\n"
 
             except Exception as e:
