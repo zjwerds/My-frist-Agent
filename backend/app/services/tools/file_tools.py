@@ -175,6 +175,60 @@ async def _edit_file(args: dict) -> dict:
         return {"error": str(e)}
 
 
+async def _file_delete(args: dict) -> dict:
+    """Delete a file or empty directory."""
+    filepath = args.get("path", "")
+    if not filepath:
+        return {"error": "缺少文件路径"}
+
+    path = Path(filepath)
+    if not path.exists():
+        return {"error": f"文件或目录不存在: {filepath}"}
+    if not in_workspace(path):
+        return {"error": f"无权删除（超出工作区范围）: {filepath}"}
+
+    try:
+        if path.is_dir():
+            # Only allow deleting empty directories for safety
+            if any(path.iterdir()):
+                return {"error": f"目录不为空，无法删除: {filepath}"}
+            path.rmdir()
+        else:
+            path.unlink()
+        return {"path": str(path.resolve()), "status": "deleted"}
+    except PermissionError:
+        return {"error": f"无权限删除: {filepath}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+async def _file_rename(args: dict) -> dict:
+    """Rename or move a file/directory."""
+    filepath = args.get("path", "")
+    new_name = args.get("new_name", "")
+    if not filepath or not new_name:
+        return {"error": "请提供 path（原路径）和 new_name（新名称）"}
+
+    path = Path(filepath)
+    if not path.exists():
+        return {"error": f"文件或目录不存在: {filepath}"}
+    if not in_workspace(path):
+        return {"error": f"无权操作（超出工作区范围）: {filepath}"}
+
+    try:
+        new_path = path.parent / new_name
+        if new_path.exists():
+            return {"error": f"目标文件已存在: {new_name}"}
+        if not in_workspace(new_path):
+            return {"error": f"无权写入目标路径（超出工作区范围）: {new_name}"}
+        path.rename(new_path)
+        return {"path": str(new_path.resolve()), "old_path": str(path.resolve()), "status": "renamed"}
+    except PermissionError:
+        return {"error": f"无权限重命名: {filepath}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 async def _read_lines(args: dict) -> dict:
     filepath = args.get("path", "")
     start = int(args.get("start", 1))

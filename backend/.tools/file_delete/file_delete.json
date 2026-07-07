@@ -1,0 +1,27 @@
+{
+  "id": "file_delete",
+  "name": "删除文件/目录",
+  "description": "删除本地文件或空目录",
+  "category": "代码开发",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "file_delete",
+      "description": "删除指定的文件或空目录。当用户要求删除、移除、清理文件或文件夹时调用此工具。注意：只能删除空目录，非空目录会报错。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "要删除的文件或空目录路径，可以是绝对路径或相对于工作目录的路径"
+          }
+        },
+        "required": ["path"]
+      }
+    }
+  }
+}

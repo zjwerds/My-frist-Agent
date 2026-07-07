@@ -1,0 +1,31 @@
+{
+  "id": "file_rename",
+  "name": "重命名文件/目录",
+  "description": "重命名本地文件或目录",
+  "category": "代码开发",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "file_rename",
+      "description": "重命名或移动文件/目录。当用户要求改名、重命名、移动文件或文件夹时调用此工具。注意：new_name 只是新名称（不含路径），文件保留在原目录。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "原文件或目录路径"
+          },
+          "new_name": {
+            "type": "string",
+            "description": "新名称（不含路径，仅文件名部分，如 'readme.md'）"
+          }
+        },
+        "required": ["path", "new_name"]
+      }
+    }
+  }
+}
