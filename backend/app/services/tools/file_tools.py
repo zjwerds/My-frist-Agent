@@ -64,9 +64,10 @@ async def _file_read(args: dict, context: dict | None = None) -> dict:
         return {"error": str(e)}
 
 
-async def _file_write(args: dict) -> dict:
+async def _file_write(args: dict, context: dict | None = None) -> dict:
     filepath = args.get("path", "")
     content = args.get("content", "")
+    project_path = (context or {}).get("project_path", "")
 
     if not filepath:
         return {"error": "缺少文件路径"}
@@ -77,6 +78,8 @@ async def _file_write(args: dict) -> dict:
 
     try:
         path = Path(filepath)
+        if not path.is_absolute() and project_path:
+            path = Path(project_path) / filepath
         if not in_workspace(path):
             return {"error": f"无权写入该路径（超出工作区范围）: {filepath}"}
         path.parent.mkdir(parents=True, exist_ok=True)

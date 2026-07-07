@@ -7,6 +7,7 @@ interface ProjectExplorerProps {
   currentProjectPath?: string | null
   onSelectProject: (path: string) => void
   onCreateProject: (name: string) => Promise<string>
+  refreshKey?: number
 }
 
 function FolderIcon() {
@@ -362,7 +363,7 @@ function TreeNode({ entry, expandedDirs, dirCache, onToggle, onOpenFile, onDelet
 
 const electronAPI = (window as unknown as { electronAPI?: { openDirectory?: () => Promise<string | null> } }).electronAPI
 
-export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProject, onCreateProject }: ProjectExplorerProps) {
+export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProject, onCreateProject, refreshKey }: ProjectExplorerProps) {
   const [entries, setEntries] = useState<FileEntry[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -495,7 +496,7 @@ export function ProjectExplorer({ onOpenFile, currentProjectPath, onSelectProjec
       setExpandedDirs(new Set())
       setDirCache({})
     }
-  }, [currentProjectPath])
+  }, [currentProjectPath, refreshKey])
 
   const handleOpenFolder = async () => {
     if (electronAPI?.openDirectory) {

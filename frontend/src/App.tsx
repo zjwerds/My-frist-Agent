@@ -292,6 +292,7 @@ export default function App() {
           currentProjectPath={currentProjectPath}
           onSelectProject={handleSelectProject}
           onCreateProject={handleCreateProject}
+          refreshKey={refreshKey}
         />
         {!backendOk && (
           <div className="absolute top-0 left-0 right-0 z-40 flex items-center justify-center gap-2 py-2 bg-red-500/70 backdrop-blur-[20px] text-white text-xs">

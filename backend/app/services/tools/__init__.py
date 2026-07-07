@@ -1,5 +1,6 @@
 """Tool implementations package — exports execute_tool dispatcher."""
 
+import inspect
 import json
 from app.services.tools.file_tools import _file_read, _file_write, _file_search, _edit_file, _read_lines, _file_delete, _file_rename
 from app.services.tools.web_tools import _web_search, _web_fetch, _api_request
@@ -52,7 +53,8 @@ async def execute_tool(tool_name: str, arguments: dict, context: dict | None = N
         return json.dumps({"error": f"Unknown tool: {tool_name}"})
 
     try:
-        if tool_name in ("ocr_image", "search_memory", "file_read"):
+        sig = inspect.signature(handler)
+        if len(sig.parameters) >= 2 or "context" in sig.parameters:
             result = await handler(arguments, context or {})
         else:
             result = await handler(arguments)

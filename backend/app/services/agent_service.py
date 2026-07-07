@@ -128,7 +128,7 @@ async def run_agent_stream(
                 "all_images": all_images,
                 "conversation_id": conversation_id,
                 "project_path": project_path or "",
-            } if tool_name in ("ocr_image", "search_memory", "file_read") else {}
+            }
             result = await execute_tool(tool_name, args, context)
 
             yield {

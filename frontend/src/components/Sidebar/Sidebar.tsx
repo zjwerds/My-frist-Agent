@@ -7,6 +7,7 @@ interface SidebarProps {
   currentProjectPath?: string | null
   onSelectProject: (path: string) => void
   onCreateProject: (name: string) => Promise<string>
+  refreshKey?: number
 }
 
 const MIN_WIDTH = 180
@@ -19,6 +20,7 @@ export function Sidebar({
   currentProjectPath,
   onSelectProject,
   onCreateProject,
+  refreshKey,
 }: SidebarProps) {
   const [width, setWidth] = useState(() => {
     const saved = localStorage.getItem(STORAGE_KEY)
@@ -87,6 +89,7 @@ export function Sidebar({
             currentProjectPath={currentProjectPath}
             onSelectProject={onSelectProject}
             onCreateProject={onCreateProject}
+            refreshKey={refreshKey}
           />
         </div>
 
