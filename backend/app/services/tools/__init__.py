@@ -2,7 +2,7 @@
 
 import inspect
 import json
-from app.services.tools.file_tools import _file_read, _file_write, _file_search, _edit_file, _read_lines, _file_delete, _file_rename
+from app.services.tools.file_tools import _file_read, _file_write, _file_search, _edit_file, _read_lines, _file_delete, _file_rename, _dir_list
 from app.services.tools.web_tools import _web_search, _web_fetch, _api_request
 from app.services.tools.dev_tools import _shell_command, _code_review, _git_operation, _npm_install, _pip_install, _run_tests, _run_migration
 from app.services.tools.utility_tools import _translator, _json_formatter, _regex_tester, _ocr_image, _search_memory, _db_query, _env_manage
@@ -30,6 +30,7 @@ async def execute_tool(tool_name: str, arguments: dict, context: dict | None = N
         "read_lines": _read_lines,
         "file_delete": _file_delete,
         "file_rename": _file_rename,
+        "dir_list": _dir_list,
         "db_query": _db_query,
         "start_process": _start_process,
         "stop_process": _stop_process,

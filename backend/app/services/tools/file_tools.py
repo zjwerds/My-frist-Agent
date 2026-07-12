@@ -265,3 +265,34 @@ async def _read_lines(args: dict) -> dict:
         return {"error": f"无权限读取: {filepath}"}
     except Exception as e:
         return {"error": str(e)}
+
+
+async def _dir_list(args: dict, context: dict | None = None) -> dict:
+    """List files and directories at the given path."""
+    dir_path = args.get("path", "")
+    project_path = (context or {}).get("project_path", "")
+
+    try:
+        path = Path(dir_path) if dir_path else Path(".")
+        if not path.is_absolute() and project_path:
+            path = Path(project_path) / dir_path if dir_path else Path(project_path)
+        if not path.exists():
+            return {"error": f"目录不存在: {dir_path or '.'}"}
+        if not path.is_dir():
+            return {"error": f"路径不是目录: {dir_path or '.'}"}
+        if not in_workspace(path):
+            return {"error": f"无权访问该目录: {dir_path or '.'}"}
+
+        entries = []
+        for entry in sorted(path.iterdir(), key=lambda x: (not x.is_dir(), x.name.lower())):
+            entries.append({
+                "name": entry.name,
+                "type": "dir" if entry.is_dir() else "file",
+                "size": entry.stat().st_size if entry.is_file() else 0,
+            })
+
+        return {"path": str(path.resolve()), "entries": entries, "total": len(entries)}
+    except PermissionError:
+        return {"error": f"无权限访问: {dir_path or '.'}"}
+    except Exception as e:
+        return {"error": str(e)}

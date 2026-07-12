@@ -55,6 +55,10 @@ async def chat(
             model_name = cfg.get("model", "deepseek-v4-flash")
             timeout_seconds = cfg.get("timeout_ms", 120000) / 1000.0
 
+            # Get conversation for project_path context
+            conv = history_crud.get_conversation(db, conversation_id)
+            project_path = conv.project_path if conv else None
+
             # ★ Consolidated stable system prompt
             identity_prompt = (
                 "【强制身份指令 - 必须遵守】\n"
@@ -74,10 +78,17 @@ async def chat(
                 '4. 禁止：使用 web_search 查到结果后，仍然加入训练数据中的内容来「丰富」答案。搜索了就是搜索了，用搜索结果说话。\n'
                 '5. 如果用户要求你「上网查」或「搜索一下」，必须使用 web_search 工具，不能直接凭训练数据回答。'
             )
+            project_directive = (
+                "【项目目录信息】\n"
+                f"当前项目路径：{project_path or '（未设置）'}\n"
+                "当用户提到「这个文件」「那个文档」「刚才的文件」时，先使用 dir_list 工具查看项目目录中有哪些文件，"
+                "确定文件路径后再进行操作。不要自己编造路径。"
+            )
             stable_system_parts = [identity_prompt]
             if system_content:
                 stable_system_parts.append(system_content)
             stable_system_parts.append(web_search_directive)
+            stable_system_parts.append(project_directive)
 
             messages = [{"role": "system", "content": "\n\n---\n".join(stable_system_parts)}]
 
@@ -175,10 +186,6 @@ async def chat(
             # ★ file_context: inject full parsed text as AI-only context (not saved to DB, not displayed)
             if request.file_context:
                 messages.append({"role": "user", "content": f"[用户上传了文件，以下是文件解析内容，请据此回答用户的问题]\n{request.file_context}"})
-
-            # Get conversation for project_path context
-            conv = history_crud.get_conversation(db, conversation_id)
-            project_path = conv.project_path if conv else None
 
             full_response = ""
             tool_calls_batch: list[dict] = []

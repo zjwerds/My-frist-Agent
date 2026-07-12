@@ -1,0 +1,26 @@
+{
+  "id": "dir_list",
+  "name": "列出目录内容",
+  "description": "列出指定目录下的文件和子目录",
+  "category": "代码开发",
+  "enabled": true,
+  "builtin": true,
+  "hidden": true,
+  "type": "function",
+  "tool_definition": {
+    "type": "function",
+    "function": {
+      "name": "dir_list",
+      "description": "列出指定目录下的所有文件和子目录。返回每个条目的名称、类型（文件/目录）和大小。不传 path 则列出项目根目录。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "要列出的目录路径，相对于项目根目录。为空时列出项目根目录。"
+          }
+        }
+      }
+    }
+  }
+}
